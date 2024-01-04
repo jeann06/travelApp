@@ -1,8 +1,9 @@
 import fetcher from "@/utils/fetcher";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
-import { Card, CardBody, Col, Container, Row } from "reactstrap";
+import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import moment from "moment";
+import { Star } from "react-feather";
 
 import {
   Carousel,
@@ -11,6 +12,7 @@ import {
   CarouselIndicators,
   CarouselCaption,
 } from "reactstrap";
+import UserProfile from "@/components/UserProfile";
 
 function CarouselImages({ items }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -78,12 +80,11 @@ function CarouselImages({ items }) {
 }
 
 export default function DetailPlacesPage(props) {
-  const { id, data } = props;
+  const { id, data, data2 } = props;
 
   const items = data.postDetails.map((item, index) => {
     return {
-      src: `https://picsum.photos/id/${123 + index + 1}/2000/1500`,
-      // src: "../../TravelApp/uploads/post-details/asdfasdfa_1.jpg",
+      src: `http://localhost:8080/uploads/post-details/${item.fileName}`,
       altText: "Slide 1",
       caption: item.fileName,
       key: index + 1,
@@ -92,39 +93,71 @@ export default function DetailPlacesPage(props) {
 
   return (
     <div>
-      <Container>
+      <Container className="mb-5">
         <h1>{data.title}</h1>
 
         <CarouselImages items={items} />
 
-        <div className="d-flex align-items-center mt-3">
-          <div
-            style={{
-              width: "55px",
-              height: "55px",
-            }}
-          >
-            <img
-              src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Abby"
-              className="object-fit-cover rounded-circle"
-            />
-          </div>
-          <div className="ms-3">
-            <div>{data.user.fullName}</div>
-            <div>
-              Posted on {moment(data.createdDate).format("DD MMMM YYYY h:mm A")}
-            </div>
-          </div>
+        <div className="mt-3">
+          <UserProfile
+            profilePic={data.user.profileUrl}
+            profileName={data.user.fullName}
+            createdDate={data.createdDate}
+          ></UserProfile>
         </div>
 
         <h2 className="mt-4">Detail</h2>
         <Card className="mt-2">
           <CardBody>
-            <p>City: {data.city}</p>
+            <p>
+              Description: <br></br>
+              {data.description}
+            </p>
             <p>Address: {data.address}</p>
-            <p>Description: {data.description}</p>
+            <p>City: {data.city}</p>
+            <p>Parking: {data.parking}</p>
+            <p>Opening Hour: {moment(data.openingHour).format("h:mm A")}</p>
+            <p>Closing Hour: {moment(data.closingHour).format("h:mm A")}</p>
+            <p>Phone Number: {data.phoneNumber}</p>
           </CardBody>
         </Card>
+
+        <h2 className="mt-4">Review</h2>
+        {data2.map((item, index) => {
+          return (
+            <div key={index} className="border p-3">
+              <UserProfile
+                profilePic={data.user.profileUrl}
+                profileName={data.user.fullName}
+                createdDate={data.createdDate}
+              ></UserProfile>
+              <div className="" style={{ paddingLeft: "70px" }}>
+                <div>
+                  <Star color="yellow" fill="yellow" />
+                  <Star color="yellow" fill="yellow" />
+                  <Star color="yellow" fill="yellow" />
+                  <Star color="yellow" fill="yellow" />
+                  <Star color="yellow" fill="yellow" />
+                </div>
+                <div className="">{item.description}</div>
+                {item.reviewDetails.map((item2, index2) => {
+                  return (
+                    <img
+                      src={`http://localhost:8080/uploads/review-details/${item2.fileName}`}
+                      width={200}
+                      height={200}
+                      className="object-fit-cover me-2"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        <div className="border p-3 mt-3">
+          <Input type="textarea" style={{ resize: "none" }} rows="3"></Input>
+          <Button>Submit</Button>
+        </div>
       </Container>
     </div>
   );
@@ -152,14 +185,29 @@ export async function getServerSideProps(ctx) {
         Authorization: `Bearer ${sessionData.user.token}`,
       },
     });
+    const responseReview = await fetcher.post(
+      `/review/get/${id}`,
+      {
+        field: "likes",
+        direction: "ASC",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${sessionData.user.token}`,
+        },
+      }
+    );
     const data = response.data.data;
+    const data2 = responseReview.data.data;
     return {
       props: {
         id,
         data,
+        data2,
       },
     };
   } catch (error) {
+    console.log(error);
     return {
       notFound: true,
     };

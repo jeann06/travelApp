@@ -1,9 +1,9 @@
 import { DebugFormik } from "@/components/DebugFormik";
 import fetcher from "@/utils/fetcher";
 import { Formik, Form as FormikForm } from "formik";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import {
   Button,
@@ -17,10 +17,21 @@ import {
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import * as yup from "yup";
+import Select from "react-select";
 
 const MySwal = withReactContent(Swal);
 
-export default function AddPlacePage() {
+export default function AddPlacePage(props) {
+  const { dataCategory } = props;
+  // define category options for react-select
+  const categoryOptions = useMemo(() => {
+    return dataCategory.map((item, index) => {
+      return {
+        value: item.id,
+        label: item.category,
+      };
+    });
+  }, []);
   const [previewImages, setPreviewImages] = useState([]);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -34,6 +45,7 @@ export default function AddPlacePage() {
           title: "",
           description: "",
           city: "",
+          category: null,
           address: "",
           parking: "",
           phoneNumber: "",
@@ -41,9 +53,16 @@ export default function AddPlacePage() {
           closingHour: new Date(),
         }}
         validationSchema={yup.object().shape({
+          // files: yup.array().required("Images is required"),
           title: yup.string().required("Place Name is required"),
           description: yup.string().required("Description is required"),
           city: yup.string().required("City is required"),
+          category: yup
+            .object({
+              id: yup.number(),
+              category: yup.string(),
+            })
+            .required("Category is required"),
           address: yup.string().required("Address is required"),
           parking: yup.string().optional(),
           phoneNumber: yup.string().required("Phone Number is required"),
@@ -58,6 +77,7 @@ export default function AddPlacePage() {
           files.forEach((file, index) => {
             formData.append("files", file);
           });
+
           formData.append("data", JSON.stringify(rest));
           try {
             const response = await fetcher.post("/post/create", formData, {
@@ -226,6 +246,40 @@ export default function AddPlacePage() {
 
             <Row>
               <FormGroup tag={Col} md={{ offset: 3, size: 6 }}>
+                <Label for="category">Category</Label>
+
+                <Select
+                  instanceId="category"
+                  placeholder="Please select category"
+                  value={
+                    formik.values.category
+                      ? {
+                          value: formik.values.category.id,
+                          label: formik.values.category.category,
+                        }
+                      : null
+                  }
+                  options={categoryOptions}
+                  onChange={(option) =>
+                    formik.setFieldValue("category", {
+                      id: option.value,
+                      category: option.label,
+                    })
+                  }
+                  onBlur={formik.handleBlur}
+                  className={`${formik.errors.category ? "is-invalid" : ""}`}
+                />
+                <div className="form-text">
+                  Value:{" "}
+                  {formik.values.category
+                    ? JSON.stringify(formik.values.category)
+                    : "N/A"}
+                </div>
+                <FormFeedback>{formik.errors.category}</FormFeedback>
+              </FormGroup>
+            </Row>
+            <Row>
+              <FormGroup tag={Col} md={{ offset: 3, size: 6 }}>
                 <Label for="parking">Parking</Label>
                 <Input
                   id="parking"
@@ -346,4 +400,37 @@ export default function AddPlacePage() {
       </Formik>
     </div>
   );
+}
+
+export async function getServerSideProps(ctx) {
+  const sessionData = await getSession(ctx);
+
+  if (!sessionData) {
+    return {
+      redirect: {
+        destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
+        permanent: false,
+      },
+    };
+  }
+
+  console.log(sessionData.user.token);
+
+  try {
+    const responseCategory = await fetcher.get(`/category/getAll`, {
+      headers: {
+        Authorization: `Bearer ${sessionData.user.token}`,
+      },
+    });
+    const dataCategory = responseCategory.data.data;
+    return {
+      props: {
+        dataCategory,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 }
