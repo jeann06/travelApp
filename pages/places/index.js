@@ -9,9 +9,13 @@ export default function PlacesPage(props) {
   console.log(data, "DATA!!");
   return (
     <div>
-      <h1 className="text-center py-5">Places Page</h1>
-
       <Container className="align-items-center justify-content-center">
+        <div className="d-flex py-5 align-items-center justify-content-between">
+          <h1 className="">Places Page</h1>
+          <Button className="" color="primary" href={`places/addPlace`}>
+            Suggest Place
+          </Button>
+        </div>
         <div className="row">
           {data.map((item, index) => (
             <div key={index} className="mb-4 col-lg-3 col-md-4 col-sm-6">
@@ -35,9 +39,6 @@ export default function PlacesPage(props) {
           ))}
         </div>
       </Container>
-      <Button className="bg-primary" href={`places/addPlace`}>
-        Suggest Place
-      </Button>
     </div>
   );
 }
