@@ -269,12 +269,6 @@ export default function AddPlacePage(props) {
                   onBlur={formik.handleBlur}
                   className={`${formik.errors.category ? "is-invalid" : ""}`}
                 />
-                <div className="form-text">
-                  Value:{" "}
-                  {formik.values.category
-                    ? JSON.stringify(formik.values.category)
-                    : "N/A"}
-                </div>
                 <FormFeedback>{formik.errors.category}</FormFeedback>
               </FormGroup>
             </Row>
