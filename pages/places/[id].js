@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
 import moment from "moment";
-import { Star } from "react-feather";
+import { Star, ThumbsDown, ThumbsUp } from "react-feather";
 
 import {
   Carousel,
@@ -122,7 +122,45 @@ export default function DetailPlacesPage(props) {
           </CardBody>
         </Card>
 
+        <div className="d-flex gap-5">
+          <div className="mt-3 fw-semibold fs-5">0 Likes</div>
+          <div className="mt-3 fw-semibold fs-5">0 Dislikes</div>
+        </div>
+
+        <div className="d-flex gap-3">
+          <Button
+            color="primary"
+            className="mt-2 d-flex justify-content-center align-items-center"
+          >
+            <ThumbsUp className="me-2" size={20}></ThumbsUp>
+            Likes
+          </Button>
+
+          <Button
+            color="danger"
+            className="mt-2 d-flex justify-content-center align-items-center"
+          >
+            <ThumbsDown className="me-2" size={20}></ThumbsDown>
+            Dislikes
+          </Button>
+        </div>
+
         <h2 className="mt-4">Review</h2>
+
+        <div className="border p-3 my-3">
+          <Input
+            type="textarea"
+            placeholder="Write a review..."
+            style={{ resize: "none" }}
+            rows="3"
+          ></Input>
+          <div className="d-flex mt-3">
+            <Button color="primary" className=" ms-auto ">
+              Submit
+            </Button>
+          </div>
+        </div>
+
         {data2.map((item, index) => {
           return (
             <div key={index} className="border p-3">
@@ -154,10 +192,6 @@ export default function DetailPlacesPage(props) {
             </div>
           );
         })}
-        <div className="border p-3 mt-3">
-          <Input type="textarea" style={{ resize: "none" }} rows="3"></Input>
-          <Button>Submit</Button>
-        </div>
       </Container>
     </div>
   );
