@@ -6,12 +6,12 @@ const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
   ssr: false,
 });
 
-const MapPage = () => {
+const MapDisabledPage = () => {
   return (
-    <Container>
+    <Container className="pb-5">
       <div className="py-4">
-        <h2 className="fw-bold">Leaflet Map</h2>
-        <p>Below is an example of using leaflet map</p>
+        <h2 className="fw-bold">Leaflet Map Disabled</h2>
+        <p>Below is an example of using leaflet map where it is disabled</p>
       </div>
 
       <Formik
@@ -22,12 +22,19 @@ const MapPage = () => {
       >
         {(formik) => (
           <Form>
+            <div className="card mb-1">
+              <div className="card-body">
+                <pre className="">
+                  <code>{JSON.stringify(formik.values, null, 2)}</code>
+                </pre>
+              </div>
+            </div>
             <div className="row">
-              <div className="col-md-6">
+              <div className="col-md-12">
                 <div
                   id="map"
                   style={{
-                    height: 300,
+                    height: 600,
                   }}
                 >
                   <MapWithNoSSR
@@ -40,27 +47,8 @@ const MapPage = () => {
                       formik.setFieldValue("longitude", latLng.lng);
                       formik.setFieldValue("latitude", latLng.lat);
                     }}
+                    isDisabled={true}
                   />
-                </div>
-              </div>
-              <div className="col-md-6">
-                <p>
-                  How to use this:
-                  <br />
-                  1. Input search term pada input dikiri (yang di atas map)
-                  <br />
-                  2. Formik will listen to the location and get the x and y
-                  <br />
-                  3. Jika input di clear (tekan "x" pada input) maka formik akan
-                  reset value menjadi null
-                </p>
-
-                <div className="card">
-                  <div className="card-body">
-                    <pre className="">
-                      <code>{JSON.stringify(formik.values, null, 2)}</code>
-                    </pre>
-                  </div>
                 </div>
               </div>
             </div>
@@ -71,4 +59,4 @@ const MapPage = () => {
   );
 };
 
-export default MapPage;
+export default MapDisabledPage;
