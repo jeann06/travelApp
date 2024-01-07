@@ -13,6 +13,7 @@ import {
   CarouselCaption,
 } from "reactstrap";
 import UserProfile from "@/components/UserProfile";
+import { useRouter } from "next/router";
 
 function CarouselImages({ items }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -49,10 +50,10 @@ function CarouselImages({ items }) {
           height={400}
           alt={item.altText}
         />
-        <CarouselCaption
+        {/* <CarouselCaption
           captionText={item.caption}
           captionHeader={item.caption}
-        />
+        /> */}
       </CarouselItem>
     );
   });
@@ -80,8 +81,8 @@ function CarouselImages({ items }) {
 }
 
 export default function DetailPlacesPage(props) {
-  const { id, data, data2 } = props;
-
+  const { id, data, data2, token } = props;
+  const router = useRouter();
   const items = data.postDetails.map((item, index) => {
     return {
       src: `http://localhost:8080/uploads/post-details/${item.fileName}`,
@@ -121,29 +122,6 @@ export default function DetailPlacesPage(props) {
             <p>Phone Number: {data.phoneNumber}</p>
           </CardBody>
         </Card>
-
-        <div className="d-flex gap-5">
-          <div className="mt-3 fw-semibold fs-5">0 Likes</div>
-          <div className="mt-3 fw-semibold fs-5">0 Dislikes</div>
-        </div>
-
-        <div className="d-flex gap-3">
-          <Button
-            color="primary"
-            className="mt-2 d-flex justify-content-center align-items-center"
-          >
-            <ThumbsUp className="me-2" size={20}></ThumbsUp>
-            Likes
-          </Button>
-
-          <Button
-            color="danger"
-            className="mt-2 d-flex justify-content-center align-items-center"
-          >
-            <ThumbsDown className="me-2" size={20}></ThumbsDown>
-            Dislikes
-          </Button>
-        </div>
 
         <h2 className="mt-4">Review</h2>
 
@@ -188,6 +166,42 @@ export default function DetailPlacesPage(props) {
                     />
                   );
                 })}
+
+                <div className="d-flex gap-5">
+                  <div className="mt-3 fs-5">{item.likes} Likes</div>
+                  <div className="mt-3 fs-5">0 Dislikes</div>
+                </div>
+
+                <div className="d-flex gap-3">
+                  <Button
+                    color="primary"
+                    className="mt-2 d-flex justify-content-center align-items-center"
+                    onClick={async () => {
+                      const response = await fetcher.post(
+                        `/review/like/${item.id}`,
+                        undefined,
+                        {
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        }
+                      );
+
+                      router.reload();
+                    }}
+                  >
+                    <ThumbsUp className="me-2" size={20}></ThumbsUp>
+                    Likes
+                  </Button>
+
+                  <Button
+                    color="danger"
+                    className="mt-2 d-flex justify-content-center align-items-center"
+                  >
+                    <ThumbsDown className="me-2" size={20}></ThumbsDown>
+                    Dislikes
+                  </Button>
+                </div>
               </div>
             </div>
           );
@@ -238,6 +252,7 @@ export async function getServerSideProps(ctx) {
         id,
         data,
         data2,
+        token: sessionData.user.token,
       },
     };
   } catch (error) {
