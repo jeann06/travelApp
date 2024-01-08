@@ -6,6 +6,7 @@ import { Button, Col, Container, Row } from "reactstrap";
 import ReactPaginate from "react-paginate";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { MapPin, Star } from "react-feather";
 
 export default function PlacesPage(props) {
   const { id, data, query } = props;
@@ -39,8 +40,21 @@ export default function PlacesPage(props) {
                   alt=""
                 />
                 <div className="card-body">
-                  <h5 className="card-title">{item.title}</h5>
+                  <h5 className="card-title text-truncate">{item.title}</h5>
                   <p className="card-text text-truncate">{item.description}</p>
+                  <p className="card-text">
+                    <MapPin className="me-1" size={18} />
+                    {item.city}
+                  </p>
+                  <p className="">
+                    <Star
+                      className="me-1"
+                      size={18}
+                      color="yellow"
+                      fill="yellow"
+                    />
+                    {item.averageRating} ({item.totalRating})
+                  </p>
                   <Link href={`/places/${item.id}`} className="btn btn-primary">
                     See more
                   </Link>

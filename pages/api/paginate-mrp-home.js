@@ -4,10 +4,10 @@ export default async function handler(req, res) {
   const query = req.query;
   let { page } = query;
   page = page ? Number(page) : 1;
-  const itemsPerPage = 8;
+  const itemsPerPage = 4;
   try {
     const response = await axios.post(
-      "http://localhost:8080/post/search?sortBy=createdDate&sortDir=desc",
+      "http://localhost:8080/post/search?sortBy=createdDate&sortDir=asc",
       {},
       {
         headers: {

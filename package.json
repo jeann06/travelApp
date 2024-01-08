@@ -28,6 +28,7 @@
     "react-leaflet-geosearch": "^0.3.4",
     "react-paginate": "^8.2.0",
     "react-select": "^5.8.0",
+    "react-text-truncate": "^0.19.0",
     "react-time-picker": "^6.6.0",
     "reactstrap": "^9.2.1",
     "sweetalert2": "^11.10.1",

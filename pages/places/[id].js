@@ -1,9 +1,21 @@
 import fetcher from "@/utils/fetcher";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useState } from "react";
-import { Button, Card, CardBody, Col, Container, Input, Row } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Container,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+} from "reactstrap";
 import moment from "moment";
 import { Star, ThumbsDown, ThumbsUp } from "react-feather";
+import { Formik, Form as FormikForm } from "formik";
 
 import {
   Carousel,
@@ -14,6 +26,12 @@ import {
 } from "reactstrap";
 import UserProfile from "@/components/UserProfile";
 import { useRouter } from "next/router";
+import * as yup from "yup";
+import { DebugFormik } from "@/components/DebugFormik";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 function CarouselImages({ items }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -83,6 +101,7 @@ function CarouselImages({ items }) {
 export default function DetailPlacesPage(props) {
   const { id, data, data2, token } = props;
   const router = useRouter();
+  const { data: session, status } = useSession();
   const items = data.postDetails.map((item, index) => {
     return {
       src: `http://localhost:8080/uploads/post-details/${item.fileName}`,
@@ -91,6 +110,7 @@ export default function DetailPlacesPage(props) {
       key: index + 1,
     };
   });
+  const [previewImages, setPreviewImages] = useState([]);
 
   return (
     <div>
@@ -124,20 +144,168 @@ export default function DetailPlacesPage(props) {
         </Card>
 
         <h2 className="mt-4">Review</h2>
+        <Formik
+          initialValues={{
+            files: [],
+            rating: "",
+            description: "",
+          }}
+          validationSchema={yup.object().shape({
+            // files: yup.array().required("Images is required"),
+            rating: yup.string().required("Rating is required"),
+            description: yup.string().required("Description is required"),
+          })}
+          onSubmit={async (values, actions) => {
+            const { files, ...rest } = values;
 
-        <div className="border p-3 my-3">
-          <Input
-            type="textarea"
-            placeholder="Write a review..."
-            style={{ resize: "none" }}
-            rows="3"
-          ></Input>
-          <div className="d-flex mt-3">
-            <Button color="primary" className=" ms-auto ">
-              Submit
-            </Button>
-          </div>
-        </div>
+            const formData = new FormData();
+            files.forEach((file, index) => {
+              formData.append("files", file);
+            });
+
+            formData.append("data", JSON.stringify(rest));
+            try {
+              const response = await fetcher.post(
+                `/review/post/${id}`,
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${session.user.token}`,
+                  },
+                }
+              );
+
+              const id = response.data.data.id;
+
+              MySwal.fire({
+                icon: "success",
+                title: <p>Review has successfully added!</p>,
+                showConfirmButton: true,
+                showDenyButton: false,
+              }).then(() => {
+                router.reload();
+              });
+            } catch (error) {
+              console.error(error);
+              MySwal.fire({
+                icon: "error",
+                title: <p>Something went wrong!</p>,
+                showConfirmButton: true,
+                showDenyButton: false,
+              });
+            }
+          }}
+        >
+          {(formik) => (
+            <FormikForm className="border p-3 my-3">
+              <DebugFormik />
+              <Row>
+                <FormGroup tag={Col}>
+                  <Input
+                    id="rating"
+                    name="rating"
+                    placeholder="Rating"
+                    type="text"
+                    value={formik.values.rating}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    invalid={formik.errors.rating && formik.touched.rating}
+                  />
+                  <FormFeedback>{formik.errors.rating}</FormFeedback>
+                </FormGroup>
+              </Row>
+
+              <Row>
+                <FormGroup tag={Col}>
+                  <Input
+                    id="description"
+                    name="description"
+                    placeholder="Write your review.."
+                    type="textarea"
+                    style={{ resize: "none" }}
+                    rows="3"
+                    value={formik.values.description}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    invalid={
+                      formik.errors.description && formik.touched.description
+                    }
+                  />
+                  <FormFeedback>{formik.errors.description}</FormFeedback>
+                </FormGroup>
+              </Row>
+
+              <Row>
+                <Col>
+                  <FormGroup>
+                    <label>
+                      <input
+                        type="file"
+                        multiple
+                        hidden
+                        onChange={(e) => {
+                          if (!e.target.files || e.target.files.length === 0) {
+                            return;
+                          }
+
+                          const files = e.target.files;
+
+                          if (files.length > 5) {
+                            formik.setFieldError("files", "Maximum 5");
+                            return;
+                          }
+                          formik.setFieldValue("files", Array.from(files));
+                          setPreviewImages(
+                            Array.from(files).map((file) =>
+                              URL.createObjectURL(file)
+                            )
+                          );
+                        }}
+                      />
+
+                      <div>
+                        {previewImages.length > 0 ? (
+                          <div>
+                            {previewImages.map((file, index) => (
+                              <img
+                                key={index}
+                                src={file}
+                                className="object-fit-cover border rounded"
+                                width="150px"
+                                height="150px"
+                                alt=""
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="d-flex">
+                            <span className="btn btn-light border justify-content-center align-items-center">
+                              Add Image
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                    <Input className="d-none" invalid={formik.errors.files} />
+                    <FormFeedback>{formik.errors.files}</FormFeedback>
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <div className="d-flex mt-1">
+                <Button
+                  type="submit"
+                  color="primary"
+                  className=" ms-auto "
+                  disabled={formik.isSubmitting}
+                >
+                  {formik.isSubmitting ? "Submitting..." : "Submit"}
+                </Button>
+              </div>
+            </FormikForm>
+          )}
+        </Formik>
 
         {data2.map((item, index) => {
           return (
@@ -167,11 +335,6 @@ export default function DetailPlacesPage(props) {
                   );
                 })}
 
-                <div className="d-flex gap-5">
-                  <div className="mt-3 fs-5">{item.likes} Likes</div>
-                  <div className="mt-3 fs-5">0 Dislikes</div>
-                </div>
-
                 <div className="d-flex gap-3">
                   <Button
                     color="primary"
@@ -191,12 +354,25 @@ export default function DetailPlacesPage(props) {
                     }}
                   >
                     <ThumbsUp className="me-2" size={20}></ThumbsUp>
-                    Likes
+                    {item.likes} Likes
                   </Button>
 
                   <Button
                     color="danger"
                     className="mt-2 d-flex justify-content-center align-items-center"
+                    onClick={async () => {
+                      const response = await fetcher.post(
+                        `/review/dislike/${item.id}`,
+                        undefined,
+                        {
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        }
+                      );
+
+                      router.reload();
+                    }}
                   >
                     <ThumbsDown className="me-2" size={20}></ThumbsDown>
                     Dislikes
@@ -256,7 +432,7 @@ export async function getServerSideProps(ctx) {
       },
     };
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return {
       notFound: true,
     };
