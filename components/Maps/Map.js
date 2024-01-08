@@ -10,7 +10,7 @@ import {
 import "leaflet-defaulticon-compatibility";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import SearchField from "../Maps/SearchField";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const LocationMarker = ({
   position = [51.505, -0.09],
@@ -40,6 +40,27 @@ const LocationMarker = ({
 
 const Map = ({ position, zoom, onClickMap, isDisabled = false }) => {
   const prov = new OpenStreetMapProvider();
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation([
+            position.coords.latitude,
+            position.coords.longitude,
+          ]);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by your browser");
+    }
+  }, []);
+
+  console.log(userLocation, "USER LOCATION!");
 
   return (
     <MapContainer
