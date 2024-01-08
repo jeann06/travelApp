@@ -7,7 +7,6 @@ import { SessionProvider } from "next-auth/react";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import "react-datepicker/dist/react-datepicker.css";
-
 import "@/styles/globals.css";
 
 const App = ({ Component, pageProps: { session, ...pageProps } }) => {

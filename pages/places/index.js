@@ -30,36 +30,40 @@ export default function PlacesPage(props) {
 
         <div className="row">
           {data.data.map((item, index) => (
-            <div key={index} className="mb-4 col-lg-3 col-md-4 col-sm-6">
-              <div className="card">
-                <img
-                  src={`http://localhost:8080/${item.fileUrl}`}
-                  class="card-img-top object-fit-cover"
-                  width={150}
-                  height={300}
-                  alt=""
-                />
-                <div className="card-body">
-                  <h5 className="card-title text-truncate">{item.title}</h5>
-                  <p className="card-text text-truncate">{item.description}</p>
-                  <p className="card-text">
-                    <MapPin className="me-1" size={18} />
-                    {item.city}
-                  </p>
-                  <p className="">
-                    <Star
-                      className="me-1"
-                      size={18}
-                      color="yellow"
-                      fill="yellow"
-                    />
-                    {item.averageRating} ({item.totalRating})
-                  </p>
-                  <Link href={`/places/${item.id}`} className="btn btn-primary">
-                    See more
-                  </Link>
+            <div key={index} className="mb-4 col-lg-2 col-md-4 col-sm-6">
+              <Link
+                style={{ textDecoration: "none" }}
+                href={`/places/${item.id}`}
+              >
+                <div className="card">
+                  <img
+                    src={`http://localhost:8080/${item.fileUrl}`}
+                    class="card-img-top object-fit-cover"
+                    width={150}
+                    height={180}
+                    alt=""
+                  />
+                  <div className="card-body">
+                    <h6 className="card-title text-truncate">{item.title}</h6>
+                    <p className="card-text text-truncate">
+                      {item.description}
+                    </p>
+                    <span className="card-text">
+                      <MapPin className="me-1" size={18} />
+                      {item.city}
+                    </span>
+                    <p className="">
+                      <Star
+                        className="me-1"
+                        size={18}
+                        color="yellow"
+                        fill="yellow"
+                      />
+                      {item.averageRating} ({item.totalRating})
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
