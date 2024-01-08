@@ -1,17 +1,39 @@
 import { Container } from "reactstrap";
 import dynamic from "next/dynamic";
 import { Form, Formik } from "formik";
+import { useEffect, useState } from "react";
 
 const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
   ssr: false,
 });
 
 const MapPage = () => {
+  const [userLocation, setUserLocation] = useState(null);
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation([
+            position.coords.latitude,
+            position.coords.longitude,
+          ]);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by your browser");
+    }
+  }, []);
+
+  console.log(userLocation, "USER LOCATION!");
+
   return (
     <Container>
       <div className="py-4">
         <h2 className="fw-bold">Leaflet Map</h2>
-        <p>Below is an example of using leaflet map</p>
+        <p>My coordinates: {userLocation}</p>
       </div>
 
       <Formik
