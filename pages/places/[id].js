@@ -388,53 +388,20 @@ export default function DetailPlacesPage(props) {
 }
 
 export async function getServerSideProps(ctx) {
-  const { query, params } = ctx;
-  const sessionData = await getSession(ctx);
-
-  if (!sessionData) {
-    return {
-      redirect: {
-        destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
-        permanent: false,
-      },
-    };
-  }
-
-  console.log(sessionData.user.token);
+  const { params } = ctx;
 
   const id = params.id;
-  try {
-    const response = await fetcher.get(`/post/get/${id}`, {
-      headers: {
-        Authorization: `Bearer ${sessionData.user.token}`,
-      },
-    });
-    const responseReview = await fetcher.post(
-      `/review/get/${id}`,
-      {
-        field: "likes",
-        direction: "ASC",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${sessionData.user.token}`,
-        },
-      }
-    );
-    const data = response.data.data;
-    const data2 = responseReview.data.data;
-    return {
-      props: {
-        id,
-        data,
-        data2,
-        token: sessionData.user.token,
-      },
-    };
-  } catch (error) {
-    // console.log(error);
-    return {
-      notFound: true,
-    };
-  }
+  const response = await fetcher.get(`/post/get/${id}`);
+  const responseReview = await fetcher.get(
+    `/review/get/${id}?sortBy=createdDate&sortDir=desc&page=0&size=5`
+  );
+  const data = response.data.data;
+  const data2 = responseReview.data.data;
+  return {
+    props: {
+      id,
+      data,
+      data2,
+    },
+  };
 }

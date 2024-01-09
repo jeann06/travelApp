@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const itemsPerPage = 12;
   try {
     const response = await axios.post(
-      "http://localhost:8080/post/search?sortBy=createdDate&sortDir=desc",
+      "http://localhost:8080/post/search?sortBy=createdDate&sortDir=desc&page=0&size=8",
       {},
       {
         headers: {
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       totalPages: totalPages,
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return res.status(500).json({ message: "something went wrong" });
   }
 }

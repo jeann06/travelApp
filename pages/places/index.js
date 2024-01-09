@@ -9,7 +9,7 @@ import Link from "next/link";
 import { MapPin, Star } from "react-feather";
 
 export default function PlacesPage(props) {
-  const { id, data, query } = props;
+  const { id, data, content, query } = props;
   const router = useRouter();
   const pageNumber = Number(query.page ?? 1);
   // console.log(data, "DATA!!");
@@ -29,7 +29,7 @@ export default function PlacesPage(props) {
         </div> */}
 
         <div className="row">
-          {data.data.map((item, index) => (
+          {content.map((item, index) => (
             <div key={index} className="mb-4 col-lg-2 col-md-4 col-sm-6">
               <Link
                 style={{ textDecoration: "none" }}
@@ -68,7 +68,7 @@ export default function PlacesPage(props) {
           ))}
         </div>
 
-        <ReactPaginate
+        {/* <ReactPaginate
           previousLabel="previous"
           nextLabel="next"
           onPageChange={({ selected }) => {
@@ -94,50 +94,31 @@ export default function PlacesPage(props) {
           activeClassName="active"
           forcePage={pageNumber - 1}
           renderOnZeroPageCount={null}
-        />
+        /> */}
       </Container>
     </div>
   );
 }
 
 export async function getServerSideProps(ctx) {
-  const { query } = ctx;
-  const sessionData = await getSession(ctx);
+  const query = ctx.query;
+  const page = query.page ?? 0;
+  const size = query.size ?? 5;
+  const sortBy = query.sortBy ?? "createdDate";
+  const sortDir = query.sortDir ?? "desc";
 
-  if (!sessionData) {
-    return {
-      redirect: {
-        destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
-        permanent: false,
-      },
-    };
-  }
+  const response = await fetcher.post(
+    `/post/search?sortBy=${sortBy}&sortDir=${sortDir}&page=${page}&size=${size}`,
+    {}
+  );
 
-  console.log(sessionData.user.token);
-
-  try {
-    const response = await axios.get(
-      `http://localhost:3000/api/paginate-places`,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionData.user.token}`,
-        },
-        params: {
-          page: query.page ?? 1,
-        },
-      }
-    );
-    const data = response.data;
-    return {
-      props: {
-        data,
-        query,
-      },
-    };
-  } catch (error) {
-    // console.log(error);
-    return {
-      notFound: true,
-    };
-  }
+  const data = response.data.data;
+  const content = data.content;
+  return {
+    props: {
+      data,
+      content,
+      query,
+    },
+  };
 }
