@@ -176,8 +176,6 @@ export default function DetailPlacesPage(props) {
                 }
               );
 
-              const id = response.data.data.id;
-
               MySwal.fire({
                 icon: "success",
                 title: <p>Review has successfully added!</p>,
@@ -307,7 +305,7 @@ export default function DetailPlacesPage(props) {
           )}
         </Formik>
 
-        {data2.map((item, index) => {
+        {data2.content.map((item, index) => {
           return (
             <div key={index} className="border p-3">
               <UserProfile
