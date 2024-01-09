@@ -397,9 +397,13 @@ export default function AddPlacePage(props) {
 }
 
 export async function getServerSideProps(ctx) {
+  // START
+  // Ini bagian untuk ngecheck apakah user sudah login atau belum
   const sessionData = await getSession(ctx);
 
   if (!sessionData) {
+    // Jika user belum login maka kita akan redirect dia ke page /auth/login dengan
+    // query callbackUrlnya
     return {
       redirect: {
         destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
@@ -407,8 +411,8 @@ export async function getServerSideProps(ctx) {
       },
     };
   }
-
   console.log(sessionData.user.token);
+  // END
 
   try {
     const responseCategory = await fetcher.get(`/category/getAll`, {

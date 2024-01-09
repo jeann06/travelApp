@@ -67,7 +67,6 @@ export default withAuth(
 // cth: matcher: ["/profile/:path*"] -> artinya semua route yang DIMULAI dengan /profile/ (atau /profile/id/ atau /profile/sebuah-halaman) akan di cek apakah user sudah login atau belum
 export const config = {
   matcher: [
-    "/places/:path*",
     "/pageBaru",
     // ...PROTECTED_ADMIN_ROUTES,
     // ...PROTECTED_USER_ROUTES,
