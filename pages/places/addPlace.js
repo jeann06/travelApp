@@ -37,7 +37,7 @@ export default function AddPlacePage(props) {
   const { data: session, status } = useSession();
   console.log(session, "SESSIONNNNNNNNNN");
   return (
-    <div>
+    <div className="container-fluid">
       <h4 className="text-center py-5">Suggest New Place</h4>
       <Formik
         initialValues={{
@@ -112,9 +112,9 @@ export default function AddPlacePage(props) {
           <FormikForm>
             {/* <DebugFormik /> */}
             <Row>
-              <Col md={{ offset: 3, size: 7 }}>
+              <Col md={{ offset: 3, size: 6 }}>
                 <FormGroup>
-                  <label>
+                  <label className="d-block">
                     <input
                       type="file"
                       multiple
@@ -139,22 +139,24 @@ export default function AddPlacePage(props) {
                       }}
                     />
 
-                    <div>
+                    <div className="d-grid">
                       {previewImages.length > 0 ? (
-                        <div>
+                        <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
                           {previewImages.map((file, index) => (
-                            <img
-                              key={index}
-                              src={file}
-                              className="object-fit-cover border rounded"
-                              width="150px"
-                              height="150px"
-                              alt=""
-                            />
+                            <div className="col" key={index}>
+                              <img
+                                key={index}
+                                src={file}
+                                className="object-fit-cover border rounded"
+                                width={130}
+                                height={130}
+                                alt=""
+                              />
+                            </div>
                           ))}
                         </div>
                       ) : (
-                        <span className="btn btn-primary">Select Image</span>
+                        <div className="btn btn-primary">Select Image</div>
                       )}
                     </div>
                   </label>
@@ -297,9 +299,9 @@ export default function AddPlacePage(props) {
             </Row>
 
             <Row>
-              <Col md={{ offset: 3 }}>
+              <Col md={{ offset: 3, size: 6 }}>
                 <Row>
-                  <FormGroup tag={Col} md={{ size: 3 }}>
+                  <FormGroup tag={Col} md={{ size: 6 }}>
                     <Label for="openingHour">Opening Hour</Label>
                     <br></br>
                     <DatePicker
@@ -324,7 +326,7 @@ export default function AddPlacePage(props) {
                     <FormFeedback>{formik.errors.openingHour}</FormFeedback>
                   </FormGroup>
 
-                  <FormGroup tag={Col} md={{ size: 3 }}>
+                  <FormGroup tag={Col} md={{ size: 6 }}>
                     <Label for="closingHour">Closing Hour</Label>
                     <br></br>
                     <DatePicker
