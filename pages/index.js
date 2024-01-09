@@ -197,10 +197,9 @@ function CarouselImages({ items }) {
 }
 
 export default function HomePage(props) {
-  const { id, data, query } = props;
-  const { data: session, status } = useSession();
+  const { data, data2 } = props;
   const router = useRouter();
-  const pageNumber = Number(query.page ?? 1);
+  console.log(data, "DATA@@");
   const items = [
     {
       src: "https://fastly.picsum.photos/id/13/2500/1667.jpg?hmac=SoX9UoHhN8HyklRA4A3vcCWJMVtiBXUg0W4ljWTor7s",
@@ -228,17 +227,16 @@ export default function HomePage(props) {
         <div className="mt-3">
           <CarouselImages items={items} />
         </div>
-
-        <div className="row">
-          <h3 className="mt-5">Our Recommendation</h3>
-          {data.data.map((item, index) => (
-            <div key={index} className="mt-2 mb-4 col-lg-3 col-md-4 col-sm-6">
+        <h3 className="mt-5">Our Recommendation</h3>
+        <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
+          {data.content.map((item, index) => (
+            <div key={index} className="col mb-3">
               <div className="card">
                 <img
                   src={`http://localhost:8080/${item.fileUrl}`}
                   class="card-img-top object-fit-cover"
                   width={150}
-                  height={300}
+                  height={225}
                   alt=""
                 />
                 <div className="card-body">
@@ -253,80 +251,51 @@ export default function HomePage(props) {
           ))}
         </div>
 
-        {/* <div className="mt-3">
-          <ReactPaginate
-            previousLabel="previous"
-            nextLabel="next"
-            onPageChange={({ selected }) => {
-              router.push(`/places?page=${selected + 1}`);
-            }}
-            hrefBuilder={(page, pageCount, selected) =>
-              page >= 1 && page <= data.totalPages
-                ? `/places?page=${page}`
-                : "#"
-            }
-            hrefAllControls
-            pageCount={data.totalPages}
-            breakLabel="..."
-            pageRangeDisplayed={4}
-            marginPagesDisplayed={2}
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName="pagination"
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousClassName="page-item"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            activeClassName="active"
-            forcePage={pageNumber - 1}
-            renderOnZeroPageCount={null}
-          />
-        </div> */}
+        <h3 className="mt-5">Our Most Reviewed Places</h3>
+        <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
+          {data2.content.map((item, index) => (
+            <div key={index} className="col mb-3">
+              <div className="card">
+                <img
+                  src={`http://localhost:8080/${item.fileUrl}`}
+                  class="card-img-top object-fit-cover"
+                  width={150}
+                  height={225}
+                  alt=""
+                />
+                <div className="card-body">
+                  <h5 className="card-title text-truncate">{item.title}</h5>
+                  <p className="card-text text-truncate">{item.description}</p>
+                  <Link href={`/places/${item.id}`} className="btn btn-primary">
+                    See more
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </Container>
     </div>
   );
 }
 
 export async function getServerSideProps(ctx) {
-  const { query } = ctx;
-  const sessionData = await getSession(ctx);
+  const response = await fetcher.post(
+    `/post/search?sortBy=rating&sortDir=desc&page=0&size=5`,
+    {}
+  );
 
-  if (!sessionData) {
-    return {
-      redirect: {
-        destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
-        permanent: false,
-      },
-    };
-  }
+  const response2 = await fetcher.post(
+    `/post/search?sortBy=rating&sortDir=asc&page=0&size=5`,
+    {}
+  );
+  const data = response.data.data;
+  const data2 = response2.data.data;
 
-  console.log(sessionData.user.token);
-
-  try {
-    const response = await axios.get(
-      `http://localhost:3000/api/paginate-recs-home`,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionData.user.token}`,
-        },
-        params: {
-          page: query.page ?? 1,
-        },
-      }
-    );
-    const data = response.data;
-    return {
-      props: {
-        data,
-        query,
-      },
-    };
-  } catch (error) {
-    // console.log(error);
-    return {
-      notFound: true,
-    };
-  }
+  return {
+    props: {
+      data,
+      data2,
+    },
+  };
 }
