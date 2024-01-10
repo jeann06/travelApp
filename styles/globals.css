@@ -15,3 +15,7 @@
 .card-text {
   font-size: 14px;
 }
+
+.align-caret-right::after {
+  margin-left: 60px;
+}

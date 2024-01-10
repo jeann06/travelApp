@@ -52,12 +52,12 @@ export default function PlacesPage(props) {
       selectedFilter.sortBy === "createdDate" &&
       selectedFilter.sortDir === "desc"
     ) {
-      return "Tanggal Terbaru";
+      return "Newest";
     } else if (
       selectedFilter.sortBy === "createdDate" &&
       selectedFilter.sortDir === "asc"
     ) {
-      return "Tanggal Terlama";
+      return "Oldest";
     }
   };
 
@@ -67,52 +67,102 @@ export default function PlacesPage(props) {
         <div className="row">
           <div className="col-2 py-4">
             <span className="fw-bold fs-5">Filtering</span>
-            <div className="">
-              City
-              <div className="">
-                <Input
-                  id="jakarta-pusat"
-                  name="jakarta-pusat"
-                  type="checkbox"
-                  className="me-2"
-                ></Input>
-                <Label>Jakarta Pusat</Label>
+            <div className="card mt-2 py-3">
+              <div className="px-3" style={{ fontSize: "15px" }}>
+                <div className="fw-semibold fs-6 mb-2">Category</div>
+                <div className="">
+                  <Input
+                    id="shopping-mall"
+                    name="shopping-mall"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Shopping Mall</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="cafe"
+                    name="cafe"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Cafe</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="restaurant"
+                    name="restaurant"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Restaurant</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="park"
+                    name="park"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Park</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="other"
+                    name="other"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Other</Label>
+                </div>
               </div>
-              <div className="">
-                <Input
-                  id="jakarta-timur"
-                  name="jakarta-timur"
-                  type="checkbox"
-                  className="me-2"
-                ></Input>
-                <Label>Jakarta Timur</Label>
-              </div>
-              <div className="">
-                <Input
-                  id="jakarta-utara"
-                  name="jakarta-utara"
-                  type="checkbox"
-                  className="me-2"
-                ></Input>
-                <Label>Jakarta Utara</Label>
-              </div>
-              <div className="">
-                <Input
-                  id="jakarta-selatan"
-                  name="jakarta-selatan"
-                  type="checkbox"
-                  className="me-2"
-                ></Input>
-                <Label>Jakarta Selatan</Label>
-              </div>
-              <div className="">
-                <Input
-                  id="jakarta-barat"
-                  name="jakarta-barat"
-                  type="checkbox"
-                  className="me-2"
-                ></Input>
-                <Label>Jakarta Barat</Label>
+              <div className="px-3 mt-2" style={{ fontSize: "15px" }}>
+                <div className="fw-semibold fs-6 mb-2">City</div>
+                <div className="">
+                  <Input
+                    id="jakarta-pusat"
+                    name="jakarta-pusat"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Jakarta Pusat</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="jakarta-timur"
+                    name="jakarta-timur"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Jakarta Timur</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="jakarta-utara"
+                    name="jakarta-utara"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Jakarta Utara</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="jakarta-selatan"
+                    name="jakarta-selatan"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Jakarta Selatan</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="jakarta-barat"
+                    name="jakarta-barat"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Jakarta Barat</Label>
+                </div>
               </div>
             </div>
           </div>
@@ -121,14 +171,19 @@ export default function PlacesPage(props) {
               <h1 className="">Places Page</h1>
               <div className="d-flex">
                 <Dropdown
-                  className="me-4"
+                  className="me-3"
                   isOpen={filterOpen}
                   toggle={toggleFilter}
                 >
-                  <DropdownToggle caret>
+                  <DropdownToggle
+                    caret
+                    color="light"
+                    className="border text-start align-caret-right"
+                    style={{ minWidth: "150px" }}
+                  >
                     {getFilterLabel(selectedFilter)}
                   </DropdownToggle>
-                  <DropdownMenu>
+                  <DropdownMenu className="mt-1" style={{ minWidth: "150px" }}>
                     <DropdownItem
                       onClick={() =>
                         handleFilterSelect({
@@ -137,7 +192,7 @@ export default function PlacesPage(props) {
                         })
                       }
                     >
-                      Tanggal Terbaru
+                      Newest
                     </DropdownItem>
                     <DropdownItem
                       onClick={() =>
@@ -147,7 +202,7 @@ export default function PlacesPage(props) {
                         })
                       }
                     >
-                      Tanggal Terlama
+                      Oldest
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -199,39 +254,41 @@ export default function PlacesPage(props) {
               ))}
             </div>
 
-            <ReactPaginate
-              previousLabel="previous"
-              nextLabel="next"
-              onPageChange={({ selected }) => {
-                router.push({
-                  pathname: router.pathname,
-                  query: {
-                    ...router.query,
-                    page: selected,
-                  },
-                });
-              }}
-              // hrefBuilder={(page, pageCount, selected) =>
-              //   page >= 1 && page <= data.totalPages ? `/places?page=${page}` : "#"
-              // }
-              // hrefAllControls
-              pageCount={data.totalPages}
-              breakLabel="..."
-              pageRangeDisplayed={4}
-              marginPagesDisplayed={2}
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              activeClassName="active"
-              forcePage={data.number}
-              renderOnZeroPageCount={null}
-            />
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <ReactPaginate
+                previousLabel="previous"
+                nextLabel="next"
+                onPageChange={({ selected }) => {
+                  router.push({
+                    pathname: router.pathname,
+                    query: {
+                      ...router.query,
+                      page: selected,
+                    },
+                  });
+                }}
+                // hrefBuilder={(page, pageCount, selected) =>
+                //   page >= 1 && page <= data.totalPages ? `/places?page=${page}` : "#"
+                // }
+                // hrefAllControls
+                pageCount={data.totalPages}
+                breakLabel="..."
+                pageRangeDisplayed={4}
+                marginPagesDisplayed={2}
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                activeClassName="active"
+                forcePage={data.number}
+                renderOnZeroPageCount={null}
+              />
+            </div>
           </div>
         </div>
       </Container>
@@ -242,7 +299,7 @@ export default function PlacesPage(props) {
 export async function getServerSideProps(ctx) {
   const query = ctx.query;
   const page = query.page ?? 0;
-  const size = query.size ?? 5;
+  const size = query.size ?? 10;
   const sortBy = query.sortBy ?? "createdDate";
   const sortDir = query.sortDir ?? "desc";
 
