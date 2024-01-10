@@ -128,7 +128,7 @@ export default function DetailPlacesPage(props) {
         <div className="mt-3">
           <UserProfile
             profilePic={data.user.profileUrl}
-            profileName={data.user.fullName}
+            profileName={data.user.username}
             createdDate={data.createdDate}
           ></UserProfile>
         </div>
@@ -340,8 +340,8 @@ export default function DetailPlacesPage(props) {
           return (
             <div key={index} className="border p-3">
               <UserProfile
-                profilePic={item.profileUrl}
-                profileName={item.username}
+                profilePic={item.user.profileUrl}
+                profileName={item.user.username}
                 createdDate={item.createdDate}
               ></UserProfile>
               <div className="" style={{ paddingLeft: "70px" }}>
