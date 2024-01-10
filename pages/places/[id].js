@@ -213,13 +213,18 @@ export default function DetailPlacesPage(props) {
                         formik.setFieldValue("rating", value)
                       }
                       emptySymbol={
-                        <Star color="#ffe234" className="text-muted" />
+                        <Star
+                          color="#ffe234"
+                          className="text-muted"
+                          size={25}
+                        />
                       }
                       fullSymbol={
                         <Star
                           color="#ffe234"
                           fill="#ffe234"
                           className="text-warning"
+                          size={25}
                         />
                       }
                       onBlur={formik.handleBlur}
@@ -258,12 +263,12 @@ export default function DetailPlacesPage(props) {
                           multiple
                           hidden
                           onChange={(e) => {
-                            if (
-                              !e.target.files ||
-                              e.target.files.length === 0
-                            ) {
-                              return;
-                            }
+                            // if (
+                            //   !e.target.files ||
+                            //   e.target.files.length === 0
+                            // ) {
+                            //   return;
+                            // }
 
                             const files = e.target.files;
 
@@ -271,12 +276,15 @@ export default function DetailPlacesPage(props) {
                               formik.setFieldError("files", "Maximum 5");
                               return;
                             }
+
                             formik.setFieldValue("files", Array.from(files));
-                            setPreviewImages(
-                              Array.from(files).map((file) =>
-                                URL.createObjectURL(file)
-                              )
-                            );
+                            if (files.length > 0) {
+                              setPreviewImages(
+                                Array.from(files).map((file) =>
+                                  URL.createObjectURL(file)
+                                )
+                              );
+                            }
                           }}
                         />
 
@@ -323,40 +331,53 @@ export default function DetailPlacesPage(props) {
             )}
           </Formik>
         ) : (
-          <Button onClick={() => signIn()}>Please sign in before review</Button>
+          <Button className="mb-3" onClick={() => signIn()}>
+            Please sign in before writing a review
+          </Button>
         )}
 
         {data2.content.map((item, index) => {
           return (
             <div key={index} className="border p-3">
               <UserProfile
-                // profilePic={data.user.profileUrl}
+                profilePic={item.profileUrl}
                 profileName={item.username}
                 createdDate={item.createdDate}
               ></UserProfile>
               <div className="" style={{ paddingLeft: "70px" }}>
                 <div>
-                  <Star color="#ffe234" fill="#ffe234" />
-                  <Star color="#ffe234" fill="#ffe234" />
-                  <Star color="#ffe234" fill="#ffe234" />
-                  <Star color="#ffe234" fill="#ffe234" />
-                  <Star color="#ffe234" fill="#ffe234" />
+                  <Rating
+                    initialRating={item.rating}
+                    emptySymbol={
+                      <Star color="#ffe234" className="text-muted" size={20} />
+                    }
+                    fullSymbol={
+                      <Star
+                        color="#ffe234"
+                        fill="#ffe234"
+                        className="text-warning"
+                        size={20}
+                      />
+                    }
+                    readonly
+                  />
                 </div>
-                <div className="">{item.description}</div>
+                <div className="mb-3 mt-1">{item.description}</div>
                 {item.reviewDetails.map((item2, index2) => {
                   return (
                     <img
                       src={`http://localhost:8080/uploads/review-details/${item2.fileName}`}
-                      width={200}
-                      height={200}
-                      className="object-fit-cover me-2"
+                      width={150}
+                      height={150}
+                      className="object-fit-cover me-2 rounded"
                     />
                   );
                 })}
 
                 <div className="d-flex gap-3">
                   <Button
-                    color="primary"
+                    color="none"
+                    size="sm"
                     // color={
                     //   session?.user?.username === item.username
                     //     ? "primary"
@@ -382,15 +403,17 @@ export default function DetailPlacesPage(props) {
 
                       router.reload();
                     }}
+                    style={{ border: "none" }}
                     disabled={status !== "authenticated"}
                   >
                     <ThumbsUp className="me-2" size={20}></ThumbsUp>
-                    {item.likes} Likes
+                    {item.likes}
                   </Button>
 
                   <Button
-                    color="danger"
-                    className="mt-2 d-flex justify-content-center align-items-center"
+                    color="none"
+                    size="sm"
+                    className="mt-2"
                     onClick={async () => {
                       const response = await fetcher.post(
                         `/review/dislike/${item.id}`,
@@ -404,10 +427,10 @@ export default function DetailPlacesPage(props) {
 
                       router.reload();
                     }}
+                    style={{ border: "none" }}
                     disabled={status !== "authenticated"}
                   >
                     <ThumbsDown className="me-2" size={20}></ThumbsDown>
-                    Dislikes
                   </Button>
                 </div>
               </div>
