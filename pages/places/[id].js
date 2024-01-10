@@ -30,6 +30,8 @@ import * as yup from "yup";
 import { DebugFormik } from "@/components/DebugFormik";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Rating from "react-rating";
+import ReviewForm from "../../components/ReviewForm";
 
 const MySwal = withReactContent(Swal);
 
@@ -111,6 +113,10 @@ export default function DetailPlacesPage(props) {
     };
   });
   const [previewImages, setPreviewImages] = useState([]);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const toggleModal = () => {
+  //   setIsModalOpen(!isModalOpen);
+  // };
 
   return (
     <div>
@@ -152,7 +158,6 @@ export default function DetailPlacesPage(props) {
               description: "",
             }}
             validationSchema={yup.object().shape({
-              // files: yup.array().required("Images is required"),
               rating: yup.string().required("Rating is required"),
               description: yup.string().required("Description is required"),
             })}
@@ -198,16 +203,25 @@ export default function DetailPlacesPage(props) {
           >
             {(formik) => (
               <FormikForm className="border p-3 my-3">
-                <DebugFormik />
                 <Row>
                   <FormGroup tag={Col}>
-                    <Input
+                    <Rating
                       id="rating"
                       name="rating"
-                      placeholder="Rating"
-                      type="text"
-                      value={formik.values.rating}
-                      onChange={formik.handleChange}
+                      initialRating={formik.values.rating}
+                      onChange={(value) =>
+                        formik.setFieldValue("rating", value)
+                      }
+                      emptySymbol={
+                        <Star color="#ffe234" className="text-muted" />
+                      }
+                      fullSymbol={
+                        <Star
+                          color="#ffe234"
+                          fill="#ffe234"
+                          className="text-warning"
+                        />
+                      }
                       onBlur={formik.handleBlur}
                       invalid={formik.errors.rating && formik.touched.rating}
                     />
@@ -322,11 +336,11 @@ export default function DetailPlacesPage(props) {
               ></UserProfile>
               <div className="" style={{ paddingLeft: "70px" }}>
                 <div>
-                  <Star color="yellow" fill="yellow" />
-                  <Star color="yellow" fill="yellow" />
-                  <Star color="yellow" fill="yellow" />
-                  <Star color="yellow" fill="yellow" />
-                  <Star color="yellow" fill="yellow" />
+                  <Star color="#ffe234" fill="#ffe234" />
+                  <Star color="#ffe234" fill="#ffe234" />
+                  <Star color="#ffe234" fill="#ffe234" />
+                  <Star color="#ffe234" fill="#ffe234" />
+                  <Star color="#ffe234" fill="#ffe234" />
                 </div>
                 <div className="">{item.description}</div>
                 {item.reviewDetails.map((item2, index2) => {
