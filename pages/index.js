@@ -130,6 +130,7 @@ import {
   CarouselIndicators,
   CarouselCaption,
 } from "reactstrap";
+import { MapPin, Star } from "react-feather";
 
 function CarouselImages({ items }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -202,19 +203,19 @@ export default function HomePage(props) {
   console.log(data, "DATA@@");
   const items = [
     {
-      src: "https://fastly.picsum.photos/id/13/2500/1667.jpg?hmac=SoX9UoHhN8HyklRA4A3vcCWJMVtiBXUg0W4ljWTor7s",
+      src: "https://pik2.com/storage/images/sliders/thumb-1080-f954c10e611c5db66ea9bc951e84fe33.jpg",
       altText: "Slide 1",
       caption: "Slide 1",
       header: "Slide 1 Header",
     },
     {
-      src: "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY",
+      src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Jakarta_Skyline_Part_2.jpg/1200px-Jakarta_Skyline_Part_2.jpg",
       altText: "Slide 2",
       caption: "Slide 2",
       header: "Slide 2 Header",
     },
     {
-      src: "https://fastly.picsum.photos/id/11/2500/1667.jpg?hmac=xxjFJtAPgshYkysU_aqx2sZir-kIOjNR9vx0te7GycQ",
+      src: "https://storage.googleapis.com/flip-prod-mktg-strapi/media-library/jakarta_9794088ba9/jakarta_9794088ba9.jpg",
       altText: "Slide 3",
       caption: "Slide 3",
       header: "Slide 3 Header",
@@ -231,46 +232,80 @@ export default function HomePage(props) {
         <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
           {data.content.map((item, index) => (
             <div key={index} className="col mb-3">
-              <div className="card">
-                <img
-                  src={`http://localhost:8080/${item.fileUrl}`}
-                  class="card-img-top object-fit-cover"
-                  width={150}
-                  height={225}
-                  alt=""
-                />
-                <div className="card-body">
-                  <h5 className="card-title text-truncate">{item.title}</h5>
-                  <p className="card-text text-truncate">{item.description}</p>
-                  <Link href={`/places/${item.id}`} className="btn btn-primary">
-                    See more
-                  </Link>
+              <Link
+                style={{ textDecoration: "none" }}
+                href={`/places/${item.id}`}
+              >
+                <div className="card">
+                  <img
+                    src={`http://localhost:8080/${item.fileUrl}`}
+                    class="card-img-top object-fit-cover"
+                    width={150}
+                    height={225}
+                    alt=""
+                  />
+                  <div className="card-body">
+                    <h6 className="card-title text-truncate">{item.title}</h6>
+                    <p className="card-text text-truncate">
+                      {item.description}
+                    </p>
+                    <span className="card-text">
+                      <MapPin className="me-1" size={18} />
+                      {item.city}
+                    </span>
+                    <p className="">
+                      <Star
+                        className="me-1"
+                        size={18}
+                        color="yellow"
+                        fill="yellow"
+                      />
+                      {item.averageRating} ({item.totalRating})
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
 
-        <h3 className="mt-5">Our Most Reviewed Places</h3>
+        <h3 className="mt-4">Our Most Reviewed Places</h3>
         <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
           {data2.content.map((item, index) => (
             <div key={index} className="col mb-3">
-              <div className="card">
-                <img
-                  src={`http://localhost:8080/${item.fileUrl}`}
-                  class="card-img-top object-fit-cover"
-                  width={150}
-                  height={225}
-                  alt=""
-                />
-                <div className="card-body">
-                  <h5 className="card-title text-truncate">{item.title}</h5>
-                  <p className="card-text text-truncate">{item.description}</p>
-                  <Link href={`/places/${item.id}`} className="btn btn-primary">
-                    See more
-                  </Link>
+              <Link
+                style={{ textDecoration: "none" }}
+                href={`/places/${item.id}`}
+              >
+                <div className="card">
+                  <img
+                    src={`http://localhost:8080/${item.fileUrl}`}
+                    class="card-img-top object-fit-cover"
+                    width={150}
+                    height={225}
+                    alt=""
+                  />
+                  <div className="card-body">
+                    <h6 className="card-title text-truncate">{item.title}</h6>
+                    <p className="card-text text-truncate">
+                      {item.description}
+                    </p>
+                    <span className="card-text">
+                      <MapPin className="me-1" size={18} />
+                      {item.city}
+                    </span>
+                    <p className="">
+                      <Star
+                        className="me-1"
+                        size={18}
+                        color="yellow"
+                        fill="yellow"
+                      />
+                      {item.averageRating} ({item.totalRating})
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -286,7 +321,7 @@ export async function getServerSideProps(ctx) {
   );
 
   const response2 = await fetcher.post(
-    `/post/search?sortBy=rating&sortDir=asc&page=0&size=5`,
+    `/post/search?sortBy=rating&sortDir=desc&page=0&size=5`,
     {}
   );
   const data = response.data.data;

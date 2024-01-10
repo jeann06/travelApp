@@ -316,9 +316,9 @@ export default function DetailPlacesPage(props) {
           return (
             <div key={index} className="border p-3">
               <UserProfile
-                profilePic={data.user.profileUrl}
-                profileName={data.user.fullName}
-                createdDate={data.createdDate}
+                // profilePic={data.user.profileUrl}
+                profileName={item.username}
+                createdDate={item.createdDate}
               ></UserProfile>
               <div className="" style={{ paddingLeft: "70px" }}>
                 <div>
@@ -343,6 +343,17 @@ export default function DetailPlacesPage(props) {
                 <div className="d-flex gap-3">
                   <Button
                     color="primary"
+                    // color={
+                    //   session?.user?.username === item.username
+                    //     ? "primary"
+                    //     : "light"
+                    // }
+                    // ["jeanie", "ashieldx", ...]
+                    // color={
+                    //   item.someArray.find((u) => session?.user?.username === u)
+                    //     ? "primary"
+                    //     : "light"
+                    // }
                     className="mt-2 d-flex justify-content-center align-items-center"
                     onClick={async () => {
                       const response = await fetcher.post(

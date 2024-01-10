@@ -65,7 +65,7 @@ export default function PlacesPage(props) {
     <div>
       <Container className="align-items-center justify-content-center">
         <div className="row">
-          <div className="col-2">
+          <div className="col-2 py-4">
             <span className="fw-bold fs-5">Filtering</span>
             <div className="">
               City
@@ -116,7 +116,7 @@ export default function PlacesPage(props) {
               </div>
             </div>
           </div>
-          <div className="col">
+          <div className="col col-md-10">
             <div className="d-flex py-4 align-items-center justify-content-between">
               <h1 className="">Places Page</h1>
               <div className="d-flex">
@@ -157,11 +157,6 @@ export default function PlacesPage(props) {
               </div>
             </div>
 
-            {/* <div className="py-2">
-          <p>Page: {data.page}</p>
-          <p>Total Page: {data.totalPages}</p>
-        </div> */}
-
             <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
               {content.map((item, index) => (
                 <div key={index} className="col mb-4">
@@ -169,7 +164,7 @@ export default function PlacesPage(props) {
                     style={{ textDecoration: "none" }}
                     href={`/places/${item.id}`}
                   >
-                    <div className="card">
+                    <div className="card" style={{ height: "325px" }}>
                       <img
                         src={`http://localhost:8080/${item.fileUrl}`}
                         class="card-img-top object-fit-cover"
