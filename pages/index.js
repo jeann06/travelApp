@@ -110,7 +110,7 @@ export default function HomePage(props) {
         <div className="mt-3">
           <CarouselImages items={items} />
         </div>
-        <h3 className="mt-5">Our Recommendation</h3>
+        <h3 className="mt-5 mb-3">Our Recommendation</h3>
         <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
           {data.content.map((item, index) => (
             <div key={index} className="col mb-3">
@@ -151,7 +151,7 @@ export default function HomePage(props) {
           ))}
         </div>
 
-        <h3 className="mt-4">Our Most Reviewed Places</h3>
+        <h3 className="mt-4 mb-3">Most Reviewed Places This Month</h3>
         <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
           {data2.content.map((item, index) => (
             <div key={index} className="col mb-3">

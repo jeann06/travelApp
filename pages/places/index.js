@@ -2,7 +2,7 @@ import fetcher from "@/utils/fetcher";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { MapPin, Star } from "react-feather";
+import { MapPin, Search, Star } from "react-feather";
 import ReactPaginate from "react-paginate";
 import {
   Button,
@@ -20,12 +20,6 @@ export default function PlacesPage(props) {
   const router = useRouter();
   const [filterOpen, setFilterOpen] = useState(false);
   const toggleFilter = () => {
-    // if (filterOpen === true) {
-    //   setFilterOpen(true);
-    // } else {
-    //   setFilterOpen(false);
-    // }
-    //ini sama aja logicnya
     setFilterOpen(!filterOpen);
   };
 
@@ -59,6 +53,19 @@ export default function PlacesPage(props) {
     ) {
       return "Oldest";
     }
+  };
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = () => {
+    // Implement search logic here
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        search: searchTerm,
+      },
+    });
   };
 
   return (
@@ -108,12 +115,21 @@ export default function PlacesPage(props) {
                 </div>
                 <div className="">
                   <Input
-                    id="other"
-                    name="other"
+                    id="event"
+                    name="event"
                     type="checkbox"
                     className="me-2"
                   ></Input>
-                  <Label>Other</Label>
+                  <Label>Event</Label>
+                </div>
+                <div className="">
+                  <Input
+                    id="zoo"
+                    name="zoo"
+                    type="checkbox"
+                    className="me-2"
+                  ></Input>
+                  <Label>Zoo</Label>
                 </div>
               </div>
               <div className="px-3 mt-2" style={{ fontSize: "15px" }}>
@@ -170,6 +186,32 @@ export default function PlacesPage(props) {
             <div className="d-flex py-4 align-items-center justify-content-between">
               <h1 className="">Places Page</h1>
               <div className="d-flex">
+                <Input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    width: "250px",
+                    height: "36px",
+                    fontSize: "14px",
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  }}
+                />
+                <Button
+                  color="secondary"
+                  className="me-3 d-flex align-items-center justify-content-center"
+                  onClick={handleSearch}
+                  style={{
+                    height: "36px",
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                  }}
+                >
+                  <Search size={18} />
+                </Button>
+
                 <Dropdown
                   className="me-3"
                   isOpen={filterOpen}

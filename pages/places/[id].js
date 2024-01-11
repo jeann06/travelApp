@@ -31,7 +31,6 @@ import { DebugFormik } from "@/components/DebugFormik";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Rating from "react-rating";
-import ReviewForm from "../../components/ReviewForm";
 
 const MySwal = withReactContent(Swal);
 
@@ -137,15 +136,35 @@ export default function DetailPlacesPage(props) {
         <Card className="mt-2">
           <CardBody>
             <p>
-              Description: <br></br>
+              <span className="fw-semibold">Description:</span>
+              <br />
               {data.description}
             </p>
-            <p>Address: {data.address}</p>
-            <p>City: {data.city}</p>
-            <p>Parking: {data.parking}</p>
-            <p>Opening Hour: {moment(data.openingHour).format("h:mm A")}</p>
-            <p>Closing Hour: {moment(data.closingHour).format("h:mm A")}</p>
-            <p>Phone Number: {data.phoneNumber}</p>
+            <p>
+              <span className="fw-semibold">Address:</span>
+              <br />
+              {data.address}
+            </p>
+            <p>
+              <span className="fw-semibold">City: </span>
+              {data.city}
+            </p>
+            <p>
+              <span className="fw-semibold">Parking: </span>
+              {data.parking}
+            </p>
+            <p>
+              <span className="fw-semibold">Opening Hour: </span>
+              {moment(data.openingHour).format("h:mm A")}
+            </p>
+            <p>
+              <span className="fw-semibold">Closing Hour: </span>
+              {moment(data.closingHour).format("h:mm A")}
+            </p>
+            <p>
+              <span className="fw-semibold">Phone Number: </span>
+              {data.phoneNumber}
+            </p>
           </CardBody>
         </Card>
 

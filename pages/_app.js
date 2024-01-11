@@ -7,13 +7,17 @@ import { SessionProvider } from "next-auth/react";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import "react-datepicker/dist/react-datepicker.css";
+import "yet-another-react-lightbox/styles.css";
 import "@/styles/globals.css";
 
 const App = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
-      <AppBar />
-      <div className="">
+      <div
+        className=""
+        style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
+        <AppBar />
         <Component {...pageProps} />
       </div>
     </SessionProvider>
