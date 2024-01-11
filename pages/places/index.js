@@ -1,7 +1,7 @@
 import fetcher from "@/utils/fetcher";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Search, Star } from "react-feather";
 import ReactPaginate from "react-paginate";
 import {
@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 
 export default function PlacesPage(props) {
-  const { data, content, query } = props;
+  const { data, content, categoriesData, query } = props;
   const router = useRouter();
   const [filterOpen, setFilterOpen] = useState(false);
   const toggleFilter = () => {
@@ -68,6 +68,8 @@ export default function PlacesPage(props) {
     });
   };
 
+  const [categories, setCategories] = useState([]);
+
   return (
     <div>
       <Container className="align-items-center justify-content-center">
@@ -77,61 +79,43 @@ export default function PlacesPage(props) {
             <div className="card mt-2 py-3">
               <div className="px-3" style={{ fontSize: "15px" }}>
                 <div className="fw-semibold fs-6 mb-2">Category</div>
-                <div className="">
-                  <Input
-                    id="shopping-mall"
-                    name="shopping-mall"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Shopping Mall</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="cafe"
-                    name="cafe"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Cafe</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="restaurant"
-                    name="restaurant"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Restaurant</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="park"
-                    name="park"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Park</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="event"
-                    name="event"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Event</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="zoo"
-                    name="zoo"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Zoo</Label>
-                </div>
+                {categoriesData.map((item, index) => (
+                  <div className="" key={index}>
+                    <Input
+                      id={item.category}
+                      name={item.category}
+                      type="checkbox"
+                      className="me-2"
+                      onChange={(e) => {
+                        if (e.currentTarget.checked) {
+                          setCategories((prev) => [...prev, item]);
+                        } else {
+                          setCategories((prev) =>
+                            prev.filter((p) => p.id !== item.id)
+                          );
+                        }
+                      }}
+                    />
+                    <Label for={item.category}>{item.category}</Label>
+                  </div>
+                ))}
               </div>
+              <Button
+                color="primary"
+                type="button"
+                onClick={() => {
+                  router.push({
+                    pathname: router.pathname,
+                    query: {
+                      ...router.query,
+                      categories:
+                        categories.length > 0 ? JSON.stringify(categories) : "",
+                    },
+                  });
+                }}
+              >
+                Submit
+              </Button>
               <div className="px-3 mt-2" style={{ fontSize: "15px" }}>
                 <div className="fw-semibold fs-6 mb-2">City</div>
                 <div className="">
@@ -344,18 +328,27 @@ export async function getServerSideProps(ctx) {
   const size = query.size ?? 10;
   const sortBy = query.sortBy ?? "createdDate";
   const sortDir = query.sortDir ?? "desc";
+  const categories = query.categories ? JSON.parse(query.categories) : null;
 
+  const postData = {
+    ...(categories && { categories: categories }),
+  };
   const response = await fetcher.post(
     `/post/search?sortBy=${sortBy}&sortDir=${sortDir}&page=${page}&size=${size}`,
-    {}
+    postData
   );
 
   const data = response.data.data;
   const content = data.content;
+
+  const categoriesResponse = await fetcher.get(`/category/getAll`);
+  const categoriesData = categoriesResponse.data.data;
+
   return {
     props: {
       data,
       content,
+      categoriesData,
       query,
     },
   };
