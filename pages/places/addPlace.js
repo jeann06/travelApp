@@ -69,9 +69,33 @@ export default function AddPlacePage(props) {
   const router = useRouter();
   const { data: session, status } = useSession();
   console.log(session, "SESSIONNNNNNNNNN");
+
+  const cityOptions = [
+    {
+      value: 1,
+      label: "Jakarta Pusat",
+    },
+    {
+      value: 2,
+      label: "Jakarta Timur",
+    },
+    {
+      value: 3,
+      label: "Jakarta Selatan",
+    },
+    {
+      value: 4,
+      label: "Jakarta Barat",
+    },
+    {
+      value: 5,
+      label: "Jakarta Utara",
+    },
+  ];
+
   return (
     <div style={{ backgroundColor: "#f0f0f0", flex: 1 }}>
-      <div className="container bg-primary py-5">
+      <div className="container py-5">
         <div className="card mx-auto" style={{ maxWidth: "600px" }}>
           <div className="card-body py-4">
             <h4 className="text-center mb-4">Suggest New Place</h4>

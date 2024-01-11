@@ -311,7 +311,7 @@ export default function PlacesPage(props) {
                     style={{ textDecoration: "none" }}
                     href={`/places/${item.id}`}
                   >
-                    <div className="card" style={{ height: "325px" }}>
+                    <div className="card" style={{ height: "300px" }}>
                       <img
                         src={`http://localhost:8080/${item.fileUrl}`}
                         class="card-img-top object-fit-cover"
@@ -320,22 +320,28 @@ export default function PlacesPage(props) {
                         alt=""
                       />
                       <div className="card-body">
-                        <h6 className="card-title text-truncate">
+                        <h6
+                          className="card-title text-truncate"
+                          // style={{
+                          //   display: "-webkit-box",
+                          //   WebkitBoxOrient: "vertical",
+                          //   overflow: "hidden",
+                          //   WebkitLineClamp: 2, // Limit to 2 lines
+                          //   textOverflow: "ellipsis",
+                          // }}
+                        >
                           {item.title}
                         </h6>
-                        <p className="card-text text-truncate">
-                          {item.description}
-                        </p>
                         <span className="card-text">
                           <MapPin className="me-1" size={18} />
                           {item.city}
                         </span>
-                        <p className="">
+                        <p className="m-0">
                           <Star
                             className="me-1"
                             size={18}
-                            color="yellow"
-                            fill="yellow"
+                            color="#ffe234"
+                            fill="#ffe234"
                           />
                           {item.averageRating} ({item.totalRating})
                         </p>
@@ -397,12 +403,17 @@ export async function getServerSideProps(ctx) {
   const sortDir = query.sortDir ?? "desc";
   const categories = query.categories ? JSON.parse(query.categories) : null;
   const city = query.city ? JSON.parse(query.city) : null;
+  // kenapa title? karena di BE nama key nya title, dan best practice nya kalo bisa samain aja, gak juga gpp sih
+  // kenapa null? karena kalo gak ada query nya, gak usah di set -> gak ada means null, undefined, atau empty string ""
+  const title = query.search ?? null;
 
   const response = await fetcher.post(
     `/post/search?sortBy=${sortBy}&sortDir=${sortDir}&page=${page}&size=${size}`,
     {
       ...(categories && { categories: categories }),
       ...(city && { cities: city.map((item) => item.name) }),
+      // Ini means kalo title nya ada, baru kita set, kalo gak ada ya gak diset, karena kalo kamu set, ntar BE nya bakal nge filter title nya juga padahal gak perlu
+      ...(title && { title: title }),
     }
   );
 
