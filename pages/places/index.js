@@ -69,6 +69,17 @@ export default function PlacesPage(props) {
   };
 
   const [categories, setCategories] = useState([]);
+  const [city, setCity] = useState([]);
+  const cityOptions = [
+    {
+      id: 1,
+      name: "Jakarta Pusat",
+    }, // Element 1 dari array cityOptions
+    {
+      id: 2,
+      name: "Jakarta Timur",
+    }, // Element 2 dari array cityOptions
+  ];
 
   return (
     <div>
@@ -100,6 +111,31 @@ export default function PlacesPage(props) {
                   </div>
                 ))}
               </div>
+
+              <div className="px-3 mt-2" style={{ fontSize: "15px" }}>
+                <div className="fw-semibold fs-6 mb-2">City</div>
+                {cityOptions.map((item, index) => (
+                  <div className="">
+                    <Input
+                      id={item.name}
+                      name={item.name}
+                      type="checkbox"
+                      className="me-2"
+                      onChange={(e) => {
+                        if (e.currentTarget.checked) {
+                          setCity((prev) => [...prev, item]);
+                        } else {
+                          setCity((prev) =>
+                            prev.filter((p) => p.id !== item.id)
+                          );
+                        }
+                      }}
+                    ></Input>
+                    <Label for={item.name}>{item.name}</Label>
+                  </div>
+                ))}
+              </div>
+
               <Button
                 color="primary"
                 type="button"
@@ -110,60 +146,13 @@ export default function PlacesPage(props) {
                       ...router.query,
                       categories:
                         categories.length > 0 ? JSON.stringify(categories) : "",
+                      city: city.length > 0 ? JSON.stringify(city) : "",
                     },
                   });
                 }}
               >
                 Submit
               </Button>
-              <div className="px-3 mt-2" style={{ fontSize: "15px" }}>
-                <div className="fw-semibold fs-6 mb-2">City</div>
-                <div className="">
-                  <Input
-                    id="jakarta-pusat"
-                    name="jakarta-pusat"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Jakarta Pusat</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="jakarta-timur"
-                    name="jakarta-timur"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Jakarta Timur</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="jakarta-utara"
-                    name="jakarta-utara"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Jakarta Utara</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="jakarta-selatan"
-                    name="jakarta-selatan"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Jakarta Selatan</Label>
-                </div>
-                <div className="">
-                  <Input
-                    id="jakarta-barat"
-                    name="jakarta-barat"
-                    type="checkbox"
-                    className="me-2"
-                  ></Input>
-                  <Label>Jakarta Barat</Label>
-                </div>
-              </div>
             </div>
           </div>
           <div className="col col-md-10">
@@ -329,13 +318,14 @@ export async function getServerSideProps(ctx) {
   const sortBy = query.sortBy ?? "createdDate";
   const sortDir = query.sortDir ?? "desc";
   const categories = query.categories ? JSON.parse(query.categories) : null;
+  const city = query.city ? JSON.parse(query.city) : null;
 
-  const postData = {
-    ...(categories && { categories: categories }),
-  };
   const response = await fetcher.post(
     `/post/search?sortBy=${sortBy}&sortDir=${sortDir}&page=${page}&size=${size}`,
-    postData
+    {
+      ...(categories && { categories: categories }),
+      ...(city && { cities: city.map((item) => item.name) }),
+    }
   );
 
   const data = response.data.data;
