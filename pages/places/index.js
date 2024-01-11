@@ -18,6 +18,7 @@ import {
 export default function PlacesPage(props) {
   const { data, content, categoriesData, query } = props;
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(query?.search ?? "");
   const [filterOpen, setFilterOpen] = useState(false);
   const toggleFilter = () => {
     setFilterOpen(!filterOpen);
@@ -28,10 +29,7 @@ export default function PlacesPage(props) {
     sortDir: "desc",
   });
   const handleFilterSelect = (filter) => {
-    // Update the selected filter when an option is clicked
     setSelectedFilter(filter);
-    // Implement filtering logic here based on the selected filter
-    // For example, update the API call with the selected filter
     router.push({
       pathname: router.pathname,
       query: {
@@ -43,6 +41,26 @@ export default function PlacesPage(props) {
 
   const getFilterLabel = (selectedFilter) => {
     if (
+      selectedFilter.sortBy === "trending" &&
+      selectedFilter.sortDir === "desc"
+    ) {
+      return "Trending";
+    } else if (
+      selectedFilter.sortBy === "rating" &&
+      selectedFilter.sortDir === "desc"
+    ) {
+      return "Top-Rated";
+    } else if (
+      selectedFilter.sortBy === "reviews" &&
+      selectedFilter.sortDir === "desc"
+    ) {
+      return "Most-Reviews";
+    } else if (
+      selectedFilter.sortBy === "nearest" &&
+      selectedFilter.sortDir === "asc"
+    ) {
+      return "Nearest";
+    } else if (
       selectedFilter.sortBy === "createdDate" &&
       selectedFilter.sortDir === "desc"
     ) {
@@ -55,30 +73,42 @@ export default function PlacesPage(props) {
     }
   };
 
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearch = () => {
-    // Implement search logic here
+  const handleSearchQuery = () => {
+    console.log("Search button clicked");
     router.push({
       pathname: router.pathname,
       query: {
         ...router.query,
-        search: searchTerm,
+        search: searchQuery,
       },
     });
   };
 
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(
+    router.query.categories ? JSON.parse(router.query.categories) : []
+  );
   const [city, setCity] = useState([]);
   const cityOptions = [
     {
       id: 1,
       name: "Jakarta Pusat",
-    }, // Element 1 dari array cityOptions
+    },
     {
       id: 2,
       name: "Jakarta Timur",
-    }, // Element 2 dari array cityOptions
+    },
+    {
+      id: 3,
+      name: "Jakarta Selatan",
+    },
+    {
+      id: 4,
+      name: "Jakarta Barat",
+    },
+    {
+      id: 5,
+      name: "Jakarta Utara",
+    },
   ];
 
   return (
@@ -97,6 +127,9 @@ export default function PlacesPage(props) {
                       name={item.category}
                       type="checkbox"
                       className="me-2"
+                      checked={
+                        categories.findIndex((c) => c.id === item.id) !== -1
+                      }
                       onChange={(e) => {
                         if (e.currentTarget.checked) {
                           setCategories((prev) => [...prev, item]);
@@ -138,6 +171,8 @@ export default function PlacesPage(props) {
 
               <Button
                 color="primary"
+                className="btn-sm mx-auto mb-2 mt-2"
+                style={{ width: "100px" }}
                 type="button"
                 onClick={() => {
                   router.push({
@@ -162,20 +197,22 @@ export default function PlacesPage(props) {
                 <Input
                   type="text"
                   placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="me-3"
                   style={{
                     width: "250px",
                     height: "36px",
                     fontSize: "14px",
-                    borderTopRightRadius: 0,
-                    borderBottomRightRadius: 0,
                   }}
+                  value={searchQuery}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearchQuery();
+                  }}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <Button
+                {/* <Button
                   color="secondary"
                   className="me-3 d-flex align-items-center justify-content-center"
-                  onClick={handleSearch}
+                  onClick={handleSearchQuery}
                   style={{
                     height: "36px",
                     borderTopLeftRadius: 0,
@@ -183,7 +220,7 @@ export default function PlacesPage(props) {
                   }}
                 >
                   <Search size={18} />
-                </Button>
+                </Button> */}
 
                 <Dropdown
                   className="me-3"
@@ -199,6 +236,46 @@ export default function PlacesPage(props) {
                     {getFilterLabel(selectedFilter)}
                   </DropdownToggle>
                   <DropdownMenu className="mt-1" style={{ minWidth: "150px" }}>
+                    <DropdownItem
+                      onClick={() =>
+                        handleFilterSelect({
+                          sortBy: "trending",
+                          sortDir: "desc",
+                        })
+                      }
+                    >
+                      Trending
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() =>
+                        handleFilterSelect({
+                          sortBy: "rating",
+                          sortDir: "desc",
+                        })
+                      }
+                    >
+                      Top-Rated
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() =>
+                        handleFilterSelect({
+                          sortBy: "reviews",
+                          sortDir: "desc",
+                        })
+                      }
+                    >
+                      Most-Reviews
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() =>
+                        handleFilterSelect({
+                          sortBy: "nearest",
+                          sortDir: "asc",
+                        })
+                      }
+                    >
+                      Nearest
+                    </DropdownItem>
                     <DropdownItem
                       onClick={() =>
                         handleFilterSelect({
@@ -313,6 +390,7 @@ export default function PlacesPage(props) {
 
 export async function getServerSideProps(ctx) {
   const query = ctx.query;
+  console.log("Received query:", query);
   const page = query.page ?? 0;
   const size = query.size ?? 10;
   const sortBy = query.sortBy ?? "createdDate";
