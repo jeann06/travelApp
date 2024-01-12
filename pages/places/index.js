@@ -209,18 +209,6 @@ export default function PlacesPage(props) {
                   }}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                {/* <Button
-                  color="secondary"
-                  className="me-3 d-flex align-items-center justify-content-center"
-                  onClick={handleSearchQuery}
-                  style={{
-                    height: "36px",
-                    borderTopLeftRadius: 0,
-                    borderBottomLeftRadius: 0,
-                  }}
-                >
-                  <Search size={18} />
-                </Button> */}
 
                 <Dropdown
                   className="me-3"
@@ -321,14 +309,14 @@ export default function PlacesPage(props) {
                       />
                       <div className="card-body">
                         <h6
-                          className="card-title text-truncate"
-                          // style={{
-                          //   display: "-webkit-box",
-                          //   WebkitBoxOrient: "vertical",
-                          //   overflow: "hidden",
-                          //   WebkitLineClamp: 2, // Limit to 2 lines
-                          //   textOverflow: "ellipsis",
-                          // }}
+                          className="card-title"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            WebkitLineClamp: 2, // Limit to 2 lines
+                            textOverflow: "ellipsis",
+                          }}
                         >
                           {item.title}
                         </h6>

@@ -120,7 +120,12 @@ export default function DetailPlacesPage(props) {
   return (
     <div>
       <Container className="mb-5">
-        <h1>{data.title}</h1>
+        <div className="d-flex mt-4 align-items-center justify-content-between">
+          <h1>{data.title}</h1>
+          <Button className="" color="primary" href={`places/addPlace`}>
+            Report Place
+          </Button>
+        </div>
 
         <CarouselImages items={items} />
 
