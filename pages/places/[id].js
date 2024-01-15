@@ -12,9 +12,17 @@ import {
   Input,
   Label,
   Row,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import moment from "moment";
-import { Star, ThumbsDown, ThumbsUp } from "react-feather";
+import { MoreVertical, Star, ThumbsDown, ThumbsUp } from "react-feather";
 import { Formik, Form as FormikForm } from "formik";
 
 import {
@@ -31,6 +39,7 @@ import { DebugFormik } from "@/components/DebugFormik";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Rating from "react-rating";
+import PlacesImageGrid from "@/components/PlacesImageGrid";
 
 const MySwal = withReactContent(Swal);
 
@@ -106,28 +115,73 @@ export default function DetailPlacesPage(props) {
   const items = data.postDetails.map((item, index) => {
     return {
       src: `http://localhost:8080/uploads/post-details/${item.fileName}`,
-      altText: "Slide 1",
-      caption: item.fileName,
-      key: index + 1,
+      alt: item.fileName,
     };
   });
   const [previewImages, setPreviewImages] = useState([]);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const toggleModal = () => {
-  //   setIsModalOpen(!isModalOpen);
-  // };
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
 
   return (
     <div>
       <Container className="mb-5">
         <div className="d-flex mt-4 align-items-center justify-content-between">
           <h1>{data.title}</h1>
-          <Button className="" color="primary" href={`places/addPlace`}>
-            Report Place
-          </Button>
+          <Dropdown
+            className="me-3"
+            isOpen={isDropdownOpen}
+            toggle={toggleDropdown}
+          >
+            <DropdownToggle
+              caret={false}
+              color="light"
+              className="border text-start align-caret-right"
+            >
+              <MoreVertical></MoreVertical>
+            </DropdownToggle>
+            <DropdownMenu className="mt-1" style={{ minWidth: "150px" }}>
+              <DropdownItem onClick={toggleModal}>Report Place</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
 
-        <CarouselImages items={items} />
+        <Modal isOpen={isModalOpen} toggle={toggleModal}>
+          <ModalHeader toggle={toggleModal}>Report Place</ModalHeader>
+          <ModalBody>
+            <p className="fw-semibold">Why you report this place?</p>
+            <Input
+              id="reason"
+              name="reason"
+              placeholder="Tell us why your report this place..."
+              type="textarea"
+              style={{ resize: "none", height: "150px" }}
+              // value={formik.values.reason}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
+              // invalid={formik.errors.description && formik.touched.description}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="light" onClick={toggleModal}>
+              Cancel
+            </Button>
+            <Button color="primary" onClick={toggleModal}>
+              Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        <div className="my-4">
+          <PlacesImageGrid items={items} />
+        </div>
 
         <div className="mt-3">
           <UserProfile

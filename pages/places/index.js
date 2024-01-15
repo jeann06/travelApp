@@ -28,13 +28,15 @@ export default function PlacesPage(props) {
     sortBy: "createdDate",
     sortDir: "desc",
   });
-  const handleFilterSelect = (filter) => {
+  const handleFilterSelect = (filter, extraQuery = {}) => {
     setSelectedFilter(filter);
     router.push({
       pathname: router.pathname,
       query: {
+        ...router.query,
         sortBy: filter.sortBy,
         sortDir: filter.sortDir,
+        ...extraQuery,
       },
     });
   };
@@ -110,6 +112,25 @@ export default function PlacesPage(props) {
       name: "Jakarta Utara",
     },
   ];
+
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLongitude(position.coords.longitude);
+          setLatitude(position.coords.latitude);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by your browser");
+    }
+  }, []);
 
   return (
     <div>
@@ -256,10 +277,16 @@ export default function PlacesPage(props) {
                     </DropdownItem>
                     <DropdownItem
                       onClick={() =>
-                        handleFilterSelect({
-                          sortBy: "nearest",
-                          sortDir: "asc",
-                        })
+                        handleFilterSelect(
+                          {
+                            sortBy: "nearest",
+                            sortDir: "asc",
+                          },
+                          {
+                            longitude: longitude,
+                            latitude: latitude,
+                          }
+                        )
                       }
                     >
                       Nearest
@@ -394,6 +421,8 @@ export async function getServerSideProps(ctx) {
   // kenapa title? karena di BE nama key nya title, dan best practice nya kalo bisa samain aja, gak juga gpp sih
   // kenapa null? karena kalo gak ada query nya, gak usah di set -> gak ada means null, undefined, atau empty string ""
   const title = query.search ?? null;
+  const longtitude = query.longitude ?? null;
+  const latitude = query.latitude ?? null;
 
   const response = await fetcher.post(
     `/post/search?sortBy=${sortBy}&sortDir=${sortDir}&page=${page}&size=${size}`,
@@ -402,6 +431,8 @@ export async function getServerSideProps(ctx) {
       ...(city && { cities: city.map((item) => item.name) }),
       // Ini means kalo title nya ada, baru kita set, kalo gak ada ya gak diset, karena kalo kamu set, ntar BE nya bakal nge filter title nya juga padahal gak perlu
       ...(title && { title: title }),
+      ...(longtitude && { longtitude: longtitude }),
+      ...(latitude && { latitude: latitude }),
     }
   );
 
