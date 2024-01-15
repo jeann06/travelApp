@@ -20,6 +20,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Spinner,
 } from "reactstrap";
 import moment from "moment";
 import { MoreVertical, Star, ThumbsDown, ThumbsUp } from "react-feather";
@@ -43,71 +44,6 @@ import PlacesImageGrid from "@/components/PlacesImageGrid";
 
 const MySwal = withReactContent(Swal);
 
-function CarouselImages({ items }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [animating, setAnimating] = useState(false);
-
-  const next = () => {
-    if (animating) return;
-    const nextIndex = activeIndex === items.length - 1 ? 0 : activeIndex + 1;
-    setActiveIndex(nextIndex);
-  };
-
-  const previous = () => {
-    if (animating) return;
-    const nextIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
-    setActiveIndex(nextIndex);
-  };
-
-  const goToIndex = (newIndex) => {
-    if (animating) return;
-    setActiveIndex(newIndex);
-  };
-
-  const slides = items.map((item) => {
-    return (
-      <CarouselItem
-        onExiting={() => setAnimating(true)}
-        onExited={() => setAnimating(false)}
-        key={item.src}
-      >
-        <img
-          src={item.src}
-          className="object-fit-cover"
-          width={1600}
-          height={400}
-          alt={item.altText}
-        />
-        {/* <CarouselCaption
-          captionText={item.caption}
-          captionHeader={item.caption}
-        /> */}
-      </CarouselItem>
-    );
-  });
-
-  return (
-    <Carousel activeIndex={activeIndex} next={next} previous={previous}>
-      <CarouselIndicators
-        items={items}
-        activeIndex={activeIndex}
-        onClickHandler={goToIndex}
-      />
-      {slides}
-      <CarouselControl
-        direction="prev"
-        directionText="Previous"
-        onClickHandler={previous}
-      />
-      <CarouselControl
-        direction="next"
-        directionText="Next"
-        onClickHandler={next}
-      />
-    </Carousel>
-  );
-}
-
 export default function DetailPlacesPage(props) {
   const { id, data, data2 } = props;
   const router = useRouter();
@@ -118,6 +54,7 @@ export default function DetailPlacesPage(props) {
       alt: item.fileName,
     };
   });
+  console.log(items, "ITEMS!!!");
   const [previewImages, setPreviewImages] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -125,10 +62,28 @@ export default function DetailPlacesPage(props) {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  const [isModalReportOpen, setIsModalReportOpen] = useState(false);
+  const toggleModalReport = () => {
+    setIsModalReportOpen(!isModalReportOpen);
   };
+
+  const [isModalClaimOpen, setIsModalClaimOpen] = useState(false);
+  const toggleModalClaim = () => {
+    setIsModalClaimOpen(!isModalClaimOpen);
+  };
+
+  const [showOtherInput, setShowOtherInput] = useState(false);
+
+  const radioOptions = [
+    {
+      id: "false-information",
+      value: "This post contains false information",
+    },
+    {
+      id: "offensive-content",
+      value: "This post contains offensive content",
+    },
+  ];
 
   return (
     <div>
@@ -136,47 +91,231 @@ export default function DetailPlacesPage(props) {
         <div className="d-flex mt-4 align-items-center justify-content-between">
           <h1>{data.title}</h1>
           <Dropdown
-            className="me-3"
+            className=""
             isOpen={isDropdownOpen}
             toggle={toggleDropdown}
           >
-            <DropdownToggle
-              caret={false}
-              color="light"
-              className="border text-start align-caret-right"
-            >
+            <DropdownToggle caret={false} color="none" className="">
               <MoreVertical></MoreVertical>
             </DropdownToggle>
-            <DropdownMenu className="mt-1" style={{ minWidth: "150px" }}>
-              <DropdownItem onClick={toggleModal}>Report Place</DropdownItem>
+            <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
+              <DropdownItem onClick={toggleModalReport}>
+                Report Place
+              </DropdownItem>
+              <DropdownItem onClick={toggleModalClaim}>
+                Claim Place
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
 
-        <Modal isOpen={isModalOpen} toggle={toggleModal}>
-          <ModalHeader toggle={toggleModal}>Report Place</ModalHeader>
-          <ModalBody>
-            <p className="fw-semibold">Why you report this place?</p>
-            <Input
-              id="reason"
-              name="reason"
-              placeholder="Tell us why your report this place..."
-              type="textarea"
-              style={{ resize: "none", height: "150px" }}
-              // value={formik.values.reason}
-              // onChange={formik.handleChange}
-              // onBlur={formik.handleBlur}
-              // invalid={formik.errors.description && formik.touched.description}
-            />
+        <Modal isOpen={isModalReportOpen} toggle={toggleModalReport}>
+          <ModalHeader toggle={toggleModalReport} className="text-center px-4">
+            Report Place
+          </ModalHeader>
+          <ModalBody className="mb-3">
+            <Formik
+              initialValues={{
+                message: "",
+              }}
+              validationSchema={yup.object().shape({
+                message: yup.string().required("Reason is required"),
+              })}
+              onSubmit={async (values) => {
+                try {
+                  const response = await fetcher.post(
+                    `/post/report/${id}`,
+                    { message: values.message },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${session.user.token}`,
+                      },
+                    }
+                  );
+                  MySwal.fire({
+                    icon: "success",
+                    title: <p>Thank you for reporting!</p>,
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                  }).then(() => {
+                    router.push(`/places/${id}`);
+                  });
+                } catch (error) {
+                  console.error(error);
+                  MySwal.fire({
+                    icon: "error",
+                    title: <p>Something went wrong!</p>,
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                  });
+                }
+              }}
+            >
+              {(formik) => (
+                <FormikForm>
+                  <div>
+                    <label htmlFor="message">Why you report this place?</label>
+                    {radioOptions.map((option, index) => (
+                      <div className="form-check" key={index}>
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="message"
+                          id={option.id}
+                          value={option.value}
+                          checked={formik.values.message === option.value}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                        <label className="form-check-label" htmlFor={option.id}>
+                          {option.value}
+                        </label>
+                      </div>
+                    ))}
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="message"
+                        id="others"
+                        value=""
+                        checked={
+                          radioOptions.findIndex(
+                            (option) => option.value === formik.values.message
+                          ) === -1
+                        }
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                      <label className="form-check-label" htmlFor="others">
+                        Others
+                      </label>
+                      {radioOptions.findIndex(
+                        (option) => option.value === formik.values.message
+                      ) === -1 && (
+                        <textarea
+                          className="form-control"
+                          name="message"
+                          placeholder="Please specify"
+                          rows="3"
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                      )}
+                    </div>
+
+                    <Input
+                      hidden
+                      invalid={
+                        formik.touched.message && !!formik.errors.message
+                      }
+                    />
+                    <FormFeedback>{formik.errors.message}</FormFeedback>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    color="primary"
+                    className="mt-3"
+                    disabled={formik.isSubmitting}
+                  >
+                    {formik.isSubmitting ? (
+                      <>
+                        <Spinner size="sm" color="light" className="me-2" />
+                        Submiting...
+                      </>
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </FormikForm>
+              )}
+            </Formik>
           </ModalBody>
-          <ModalFooter>
-            <Button color="light" onClick={toggleModal}>
-              Cancel
-            </Button>
-            <Button color="primary" onClick={toggleModal}>
-              Submit
-            </Button>
-          </ModalFooter>
+        </Modal>
+
+        <Modal isOpen={isModalClaimOpen} toggle={toggleModalClaim}>
+          <ModalHeader toggle={toggleModalClaim} className="text-center px-4">
+            Claim Place
+          </ModalHeader>
+          <ModalBody className="mb-3">
+            <Formik
+              initialValues={{
+                message: "",
+              }}
+              validationSchema={yup.object().shape({
+                message: yup.string().required("Reason is required"),
+              })}
+              onSubmit={async (values, actions) => {
+                const { ...rest } = values;
+
+                const formData = new FormData();
+
+                formData.append("data", JSON.stringify(rest));
+                try {
+                  const response = await fetcher.post(
+                    "/post/report/",
+                    formData,
+                    {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${session.user.token}`,
+                      },
+                    }
+                  );
+
+                  MySwal.fire({
+                    icon: "success",
+                    title: <p>Thank you for reporting!</p>,
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                  }).then(() => {
+                    router.push(`/places/${id}`);
+                  });
+                } catch (error) {
+                  console.error(error);
+                  MySwal.fire({
+                    icon: "error",
+                    title: <p>Something went wrong!</p>,
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                  });
+                }
+              }}
+            >
+              {(formik) => (
+                <FormikForm>
+                  <div className="px-2">
+                    <Row>
+                      <FormGroup
+                        tag={Col}
+                        md={{ size: 12 }}
+                        className="text-center fw-semibold"
+                        style={{ fontSize: "18px" }}
+                      >
+                        <Label for="message">Why you report this place?</Label>
+                      </FormGroup>
+                    </Row>
+                    <div className="d-flex ms-auto">
+                      <Button color="light" onClick={toggleModalClaim}>
+                        Cancel
+                      </Button>
+                      <div style={{ width: "80px" }} className="ms-3">
+                        <Button
+                          block
+                          type="submit"
+                          color="primary"
+                          disabled={formik.isSubmitting}
+                        >
+                          {formik.isSubmitting ? "Submitting..." : "Submit"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </FormikForm>
+              )}
+            </Formik>
+          </ModalBody>
         </Modal>
 
         <div className="my-4">

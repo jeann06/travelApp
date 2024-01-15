@@ -14,6 +14,7 @@ import {
   CarouselCaption,
 } from "reactstrap";
 import { MapPin, Star } from "react-feather";
+import GetUserLocation from "@/components/GetUserLocation";
 
 function CarouselImages({ items }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -50,10 +51,6 @@ function CarouselImages({ items }) {
           height={400}
           alt={item.altText}
         />
-        {/* <CarouselCaption
-            captionText={item.caption}
-            captionHeader={item.caption}
-          /> */}
       </CarouselItem>
     );
   });
@@ -106,6 +103,7 @@ export default function HomePage(props) {
 
   return (
     <div>
+      <GetUserLocation />
       <Container className="align-items-center justify-content-center">
         <div className="mt-3">
           <CarouselImages items={items} />
@@ -128,9 +126,6 @@ export default function HomePage(props) {
                   />
                   <div className="card-body">
                     <h6 className="card-title text-truncate">{item.title}</h6>
-                    <p className="card-text text-truncate">
-                      {item.description}
-                    </p>
                     <span className="card-text">
                       <MapPin className="me-1" size={18} />
                       {item.city}
@@ -169,9 +164,6 @@ export default function HomePage(props) {
                   />
                   <div className="card-body">
                     <h6 className="card-title text-truncate">{item.title}</h6>
-                    <p className="card-text text-truncate">
-                      {item.description}
-                    </p>
                     <span className="card-text">
                       <MapPin className="me-1" size={18} />
                       {item.city}

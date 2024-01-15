@@ -1,39 +1,44 @@
 import { FormikConsumer } from "formik";
+import { useState } from "react";
+import { Button } from "reactstrap";
 
-export const DebugFormik = () => {
-  return (
-    <div
-      style={{
-        margin: "3rem 0",
-        borderRadius: 4,
-        background: "#f6f8fa",
-
-        boxShadow: "0 0 1px  #eee inset",
-      }}
-    >
-      <div
-        style={{
-          textTransform: "uppercase",
-          fontSize: 11,
-          borderTopLeftRadius: 4,
-          borderTopRightRadius: 4,
-          fontWeight: 500,
-          padding: ".5rem",
-          background: "#555",
-          color: "#fff",
-          letterSpacing: "1px",
-        }}
-      >
-        Formik State
-      </div>
+const FormikStatePrint = () => (
+  <div
+    className="card shadow-lg"
+    style={{
+      overflowY: "auto",
+      overflowX: "auto",
+      maxHeight: "400px",
+    }}
+  >
+    <div className="card-body">
+      <h3 className="card-title">Formik State</h3>
+      <hr />
       <FormikConsumer>
         {({ validationSchema, validate, onSubmit, ...rest }) => (
-          <div>
-            {console.log(rest, "FORMIK VALUES")}
-            <h1>Check console log</h1>
-          </div>
+          <pre suppressHydrationWarning>{JSON.stringify(rest, null, 2)}</pre>
         )}
       </FormikConsumer>
+    </div>
+  </div>
+);
+
+export const DebugFormik = () => {
+  const [show, setShow] = useState(false);
+
+  if (process.env.NODE_ENV !== "development") return null;
+
+  return (
+    <div className="fixed-bottom position-fixed start-0 p-2">
+      {show && <FormikStatePrint />}
+
+      <Button
+        color={show ? "danger" : "warning"}
+        className="mt-2"
+        onClick={() => setShow(!show)}
+      >
+        {show ? "Close" : "Open"} Debug Formik
+      </Button>
     </div>
   );
 };

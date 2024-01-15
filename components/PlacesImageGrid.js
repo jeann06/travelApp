@@ -22,7 +22,7 @@ const PlacesImageGrid = ({ items, defaultHeight = 500 }) => {
 
   return (
     <div>
-      <div className="rounded-2 overflow-hidden d-flex align-items-center">
+      <div className="rounded-2 overflow-hidden">
         <div className="row g-1">
           {items.length === 1 && (
             <div className="col-12 col-md-12" style={style}>
