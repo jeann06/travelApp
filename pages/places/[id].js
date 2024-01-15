@@ -153,8 +153,14 @@ export default function DetailPlacesPage(props) {
             >
               {(formik) => (
                 <FormikForm>
-                  <div>
-                    <label htmlFor="message">Why you report this place?</label>
+                  <div className="px-2 py-1">
+                    <label
+                      htmlFor="message"
+                      className="fw-semibold mb-3"
+                      style={{ fontSize: "20px" }}
+                    >
+                      Why you report this place?
+                    </label>
                     {radioOptions.map((option, index) => (
                       <div className="form-check" key={index}>
                         <input
@@ -167,7 +173,10 @@ export default function DetailPlacesPage(props) {
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                         />
-                        <label className="form-check-label" htmlFor={option.id}>
+                        <label
+                          className="form-check-label mb-2"
+                          htmlFor={option.id}
+                        >
                           {option.value}
                         </label>
                       </div>
@@ -194,12 +203,13 @@ export default function DetailPlacesPage(props) {
                         (option) => option.value === formik.values.message
                       ) === -1 && (
                         <textarea
-                          className="form-control"
+                          className="form-control mt-1"
                           name="message"
                           placeholder="Please specify"
                           rows="3"
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
+                          style={{ resize: "none" }}
                         />
                       )}
                     </div>
@@ -210,28 +220,23 @@ export default function DetailPlacesPage(props) {
                         formik.touched.message && !!formik.errors.message
                       }
                     />
-                    <FormFeedback>{formik.errors.message}</FormFeedback>
+                    <FormFeedback className="ms-4">
+                      {formik.errors.message}
+                    </FormFeedback>
                   </div>
 
-                  <div className="d-flex">
+                  <div className="d-flex mt-2">
                     <Button
                       color="light"
                       className="ms-auto"
-                      disabled={formik.isSubmitting}
+                      onClick={toggleModalReport}
                     >
-                      {formik.isSubmitting ? (
-                        <>
-                          <Spinner size="sm" color="light" className="me-2" />
-                          Submiting...
-                        </>
-                      ) : (
-                        "Cancel"
-                      )}
+                      Cancel
                     </Button>
                     <Button
                       type="submit"
                       color="primary"
-                      className="ms-3"
+                      className="ms-3 me-2"
                       disabled={formik.isSubmitting}
                     >
                       {formik.isSubmitting ? (

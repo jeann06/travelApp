@@ -529,7 +529,7 @@ export default function AddPlacePage(props) {
                         <FormFeedback>{formik.errors.phoneNumber}</FormFeedback>
                       </FormGroup>
                     </Row>
-                    <div className="px-5 mt-2">
+                    <div className="mt-2">
                       <Button
                         block
                         type="submit"
