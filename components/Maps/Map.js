@@ -1,16 +1,15 @@
 import {
   MapContainer,
-  TileLayer,
   Marker,
   Popup,
+  TileLayer,
+  useMap,
   useMapEvents,
-  useMapEvent,
 } from "react-leaflet";
-
 import "leaflet-defaulticon-compatibility";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
+import { useEffect, useRef, useState } from "react";
 import SearchField from "../Maps/SearchField";
-import { useState, useEffect } from "react";
 
 const LocationMarker = ({
   position = [51.505, -0.09],
@@ -38,9 +37,49 @@ const LocationMarker = ({
   );
 };
 
+const GetCoordinates = () => {
+  const initialized = useRef(false);
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+
+    async function loadLeaflet() {
+      initialized.current = true;
+      await import("leaflet");
+
+      const L = window.L;
+
+      const info = L.DomUtil.create("div", "card p-2");
+
+      const position = L.Control.extend({
+        options: {
+          position: "bottomleft",
+        },
+
+        onAdd: function (map) {
+          info.textContent = `Click on the map to get coordinates`;
+          return info;
+        },
+      });
+
+      map.on("click", (e) => {
+        info.textContent = `[${e.latlng.lat}, ${e.latlng.lng}]`;
+      });
+
+      map.addControl(new position());
+    }
+
+    if (!initialized.current) {
+      loadLeaflet();
+    }
+  }, []);
+
+  return null;
+};
+
 const Map = ({ position, zoom, onClickMap, isDisabled = false }) => {
   const prov = new OpenStreetMapProvider();
-  const [userLocation, setUserLocation] = useState(null);
 
   return (
     <MapContainer
@@ -58,6 +97,7 @@ const Map = ({ position, zoom, onClickMap, isDisabled = false }) => {
         onClickMap={onClickMap}
         isDisabled={isDisabled}
       />
+      <GetCoordinates />
       {/* See more in https://github.com/smeijer/leaflet-geosearch */}
       {!isDisabled && (
         <SearchField

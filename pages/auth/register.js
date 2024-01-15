@@ -10,14 +10,15 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
-const backgroundImage = 'https://wallpapers.com/images/hd/jakarta-city-roundabout-957wm6er9fu1zp8p.jpg';
+const backgroundImage =
+  "https://wallpapers.com/images/hd/jakarta-city-roundabout-957wm6er9fu1zp8p.jpg";
 
 const containerStyle = {
-  backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-  border: '1px solid #ddd', 
-  borderRadius: '20px',
-  padding: '20px',
-  width: '400px', 
+  backgroundColor: "rgba(255, 255, 255, 0.8)",
+  border: "1px solid #ddd",
+  borderRadius: "20px",
+  padding: "20px",
+  width: "400px",
 };
 
 const RegisterPage = () => {
@@ -75,27 +76,34 @@ const RegisterPage = () => {
     >
       {(formik) => (
         <FormikForm>
-          <div className="d-flex align-items-center py-4 full-height-page" style={{ background: `url(${backgroundImage}) no-repeat center center fixed`, backgroundSize: 'cover' }}>
-            <div
-              className="form-signin mx-auto"
-              style={
-                containerStyle
-              }
-            >
+          <div
+            className="d-flex align-items-center py-4 full-height-page"
+            style={{
+              background: `url(${backgroundImage}) no-repeat center center fixed`,
+              backgroundSize: "cover",
+            }}
+          >
+            <div className="form-signin mx-auto" style={containerStyle}>
               <h1 className="h3 mb-3 fw-normal text-center">Register</h1>
               <div className="form-floating mb-3">
                 <input
                   id="username"
                   name="username"
                   type="text"
-                  className={`form-control ${formik.errors.username ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    formik.touched.username && formik.errors.username
+                      ? "is-invalid"
+                      : ""
+                  }`}
                   placeholder="Username"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.username}
                   autoComplete="off"
                 />
-                <label htmlFor="username" className="text-secondary">Username</label>
+                <label htmlFor="username" className="text-secondary">
+                  Username
+                </label>
                 <FormFeedback>{formik.errors.username}</FormFeedback>
               </div>
 
@@ -104,14 +112,20 @@ const RegisterPage = () => {
                   id="email"
                   name="email"
                   type="email"
-                  className={`form-control ${formik.errors.email ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    formik.touched.email && formik.errors.email
+                      ? "is-invalid"
+                      : ""
+                  }`}
                   placeholder="Email address"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.email}
                   autoComplete="off"
                 />
-                <label htmlFor="email" className="text-secondary">Email Address</label>
+                <label htmlFor="email" className="text-secondary">
+                  Email Address
+                </label>
                 <FormFeedback>{formik.errors.email}</FormFeedback>
               </div>
 
@@ -120,14 +134,20 @@ const RegisterPage = () => {
                   id="password"
                   name="password"
                   type="password"
-                  className={`form-control ${formik.errors.password ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    formik.touched.password && formik.errors.password
+                      ? "is-invalid"
+                      : ""
+                  }`}
                   placeholder="Password"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
                   autoComplete="off"
                 />
-                <label htmlFor="password" className="text-secondary">Password</label>
+                <label htmlFor="password" className="text-secondary">
+                  Password
+                </label>
                 <FormFeedback>{formik.errors.password}</FormFeedback>
               </div>
 
@@ -136,14 +156,18 @@ const RegisterPage = () => {
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
-                  className={`form-control ${formik.errors.confirmPassword ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    formik.errors.confirmPassword ? "is-invalid" : ""
+                  }`}
                   placeholder="Confirm Password"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.confirmPassword}
                   autoComplete="off"
                 />
-                <label htmlFor="confirmPassword" className="text-secondary">Confirm Password</label>
+                <label htmlFor="confirmPassword" className="text-secondary">
+                  Confirm Password
+                </label>
                 <FormFeedback>{formik.errors.confirmPassword}</FormFeedback>
               </div>
 

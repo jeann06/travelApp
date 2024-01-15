@@ -11,7 +11,7 @@ const UserProfile = ({ profilePic, profileName, createdDate }) => {
       >
         <img
           src={`http://localhost:8080/${profilePic}`}
-          className="object-fit-cover rounded-circle"
+          className="object-fit-cover rounded-circle border border-secondary border-1"
           width="55px"
           height="55px"
         />

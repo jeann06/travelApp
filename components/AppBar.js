@@ -51,7 +51,7 @@ function Example(args) {
             </NavItem>
           </Nav>
           <div style={{ position: "relative" }}>
-            <Bell className="mt-3 me-3" onClick={handleNotificationClick} />
+            <Bell className="" onClick={handleNotificationClick} />
             {notificationCount > 0 && (
               <span
                 style={{
@@ -66,7 +66,7 @@ function Example(args) {
                   height: "20px",
                   width: "20px",
                 }}
-                className="mt-3 me-3 text-center align-items-center"
+                className="text-center align-items-center"
               >
                 {notificationCount}
               </span>

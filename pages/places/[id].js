@@ -213,21 +213,37 @@ export default function DetailPlacesPage(props) {
                     <FormFeedback>{formik.errors.message}</FormFeedback>
                   </div>
 
-                  <Button
-                    type="submit"
-                    color="primary"
-                    className="mt-3"
-                    disabled={formik.isSubmitting}
-                  >
-                    {formik.isSubmitting ? (
-                      <>
-                        <Spinner size="sm" color="light" className="me-2" />
-                        Submiting...
-                      </>
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
+                  <div className="d-flex">
+                    <Button
+                      color="light"
+                      className="ms-auto"
+                      disabled={formik.isSubmitting}
+                    >
+                      {formik.isSubmitting ? (
+                        <>
+                          <Spinner size="sm" color="light" className="me-2" />
+                          Submiting...
+                        </>
+                      ) : (
+                        "Cancel"
+                      )}
+                    </Button>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      className="ms-3"
+                      disabled={formik.isSubmitting}
+                    >
+                      {formik.isSubmitting ? (
+                        <>
+                          <Spinner size="sm" color="light" className="me-2" />
+                          Submiting...
+                        </>
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </div>
                 </FormikForm>
               )}
             </Formik>
@@ -444,8 +460,13 @@ export default function DetailPlacesPage(props) {
                           size={25}
                         />
                       }
-                      onBlur={formik.handleBlur}
-                      invalid={formik.errors.rating && formik.touched.rating}
+                      onBlur={(e) => {
+                        formik.setFieldTouched("rating");
+                      }}
+                    />
+                    <Input
+                      type="hidden"
+                      invalid={formik.touched.rating && formik.errors.rating}
                     />
                     <FormFeedback>{formik.errors.rating}</FormFeedback>
                   </FormGroup>

@@ -326,7 +326,7 @@ export default function PlacesPage(props) {
                     style={{ textDecoration: "none" }}
                     href={`/places/${item.id}`}
                   >
-                    <div className="card" style={{ height: "300px" }}>
+                    <div className="card" style={{ height: "100%" }}>
                       <img
                         src={`http://localhost:8080/${item.fileUrl}`}
                         class="card-img-top object-fit-cover"
@@ -367,7 +367,12 @@ export default function PlacesPage(props) {
               ))}
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div className="d-flex justify-content-between align-items-center">
+              <span>
+                Showing {data.number * data.size + 1} to{" "}
+                {data.number * data.size + data.numberOfElements} of{" "}
+                {data.totalElements} entries
+              </span>
               <ReactPaginate
                 previousLabel="previous"
                 nextLabel="next"
@@ -380,17 +385,13 @@ export default function PlacesPage(props) {
                     },
                   });
                 }}
-                // hrefBuilder={(page, pageCount, selected) =>
-                //   page >= 1 && page <= data.totalPages ? `/places?page=${page}` : "#"
-                // }
-                // hrefAllControls
                 pageCount={data.totalPages}
                 breakLabel="..."
                 pageRangeDisplayed={4}
                 marginPagesDisplayed={2}
                 breakClassName="page-item"
                 breakLinkClassName="page-link"
-                containerClassName="pagination"
+                containerClassName="pagination justify-content-end m-0"
                 pageClassName="page-item"
                 pageLinkClassName="page-link"
                 previousClassName="page-item"

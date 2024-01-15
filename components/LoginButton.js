@@ -5,10 +5,9 @@ import { Button } from "reactstrap";
 const LoginButton = () => {
   const { data: session } = useSession();
   return (
-    <div className="ml-auto flex gap-2">
+    <div className="ms-3 flex gap-2">
       {session?.user ? (
         <>
-          <p className=""> {session.user.name}</p>
           <Button onClick={() => signOut()}>Logout</Button>
         </>
       ) : (

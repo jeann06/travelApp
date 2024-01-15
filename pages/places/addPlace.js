@@ -19,7 +19,12 @@ import withReactContent from "sweetalert2-react-content";
 import * as yup from "yup";
 import Select from "react-select";
 import Lightbox from "yet-another-react-lightbox";
+import dynamic from "next/dynamic";
+import GetUserLocation from "@/components/GetUserLocation";
 
+const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
+  ssr: false,
+});
 const MySwal = withReactContent(Swal);
 
 const LightboxImage = ({ images }) => {
@@ -111,6 +116,8 @@ export default function AddPlacePage(props) {
                 phoneNumber: "",
                 openingHour: new Date(),
                 closingHour: new Date(),
+                latitude: 0,
+                longitude: 0,
               }}
               validationSchema={yup.object().shape({
                 files: yup.array().required("Images is required"),
@@ -201,6 +208,19 @@ export default function AddPlacePage(props) {
             >
               {(formik) => (
                 <FormikForm>
+                  <GetUserLocation
+                    setPosition={(position) => {
+                      formik.setFieldValue(
+                        "longitude",
+                        position.coords.longitude
+                      );
+                      formik.setFieldValue(
+                        "latitude",
+                        position.coords.latitude
+                      );
+                    }}
+                  />
+                  <DebugFormik />
                   <div className="px-4">
                     <Row>
                       <Col md={{ size: 12 }}>
@@ -296,6 +316,29 @@ export default function AddPlacePage(props) {
                           }
                         />
                         <FormFeedback>{formik.errors.description}</FormFeedback>
+                      </FormGroup>
+                    </Row>
+
+                    <Row>
+                      <FormGroup tag={Col} md={{ size: 12 }}>
+                        <div
+                          id="map"
+                          style={{
+                            height: 300,
+                          }}
+                        >
+                          <MapWithNoSSR
+                            position={[
+                              formik.values.latitude || 0,
+                              formik.values.longitude || 0,
+                            ]}
+                            zoom={18}
+                            onClickMap={(latLng) => {
+                              formik.setFieldValue("longitude", latLng.lng);
+                              formik.setFieldValue("latitude", latLng.lat);
+                            }}
+                          />
+                        </div>
                       </FormGroup>
                     </Row>
 
