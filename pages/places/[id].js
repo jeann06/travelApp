@@ -506,13 +506,6 @@ export default function DetailPlacesPage(props) {
                           multiple
                           hidden
                           onChange={(e) => {
-                            // if (
-                            //   !e.target.files ||
-                            //   e.target.files.length === 0
-                            // ) {
-                            //   return;
-                            // }
-
                             const files = e.target.files;
 
                             if (files.length > 5) {

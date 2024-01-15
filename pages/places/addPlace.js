@@ -365,24 +365,32 @@ export default function AddPlacePage(props) {
                     <Row>
                       <FormGroup tag={Col} md={{ size: 12 }}>
                         <Label for="city">City</Label>
-                        <Input
-                          id="city"
-                          name="city"
-                          type="select"
-                          value={formik.values.city}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          invalid={formik.errors.city && formik.touched.city}
-                        >
-                          <option hidden disabled value="">
-                            Please select a city
-                          </option>
-                          <option>Jakarta Timur</option>
-                          <option>Jakarta Utara</option>
-                          <option>Jakarta Pusat</option>
-                          <option>Jakarta Selatan</option>
-                          <option>Jakarta Barat</option>
-                        </Input>
+
+                        <Select
+                          instanceId="city"
+                          placeholder="Please select city"
+                          options={[
+                            { value: "Jakarta Pusat", label: "Jakarta Pusat" },
+                            { value: "Jakarta Timur", label: "Jakarta Timur" },
+                            {
+                              value: "Jakarta Selatan",
+                              label: "Jakarta Selatan",
+                            },
+                            { value: "Jakarta Barat", label: "Jakarta Barat" },
+                            { value: "Jakarta Utara", label: "Jakarta Utara" },
+                          ]}
+                          onChange={(option) =>
+                            formik.setFieldValue("city", option.value)
+                          }
+                          onBlur={() => {
+                            formik.setFieldTouched("city");
+                          }}
+                          className={`${
+                            formik.touched.city && formik.errors.city
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                        />
                         <FormFeedback>{formik.errors.city}</FormFeedback>
                       </FormGroup>
                     </Row>
@@ -421,28 +429,32 @@ export default function AddPlacePage(props) {
                         <FormFeedback>{formik.errors.category}</FormFeedback>
                       </FormGroup>
                     </Row>
+
                     <Row>
                       <FormGroup tag={Col} md={{ size: 12 }}>
                         <Label for="parking">Parking</Label>
-                        <Input
-                          id="parking"
-                          name="parking"
-                          type="select"
-                          value={formik.values.parking}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          invalid={
-                            formik.errors.parking && formik.touched.parking
+
+                        <Select
+                          instanceId="parking"
+                          placeholder="Please select parking"
+                          options={[
+                            { value: "None", label: "None" },
+                            { value: "Small", label: "Small" },
+                            { value: "Medium", label: "Medium" },
+                            { value: "Large", label: "Large" },
+                          ]}
+                          onChange={(option) =>
+                            formik.setFieldValue("parking", option.value)
                           }
-                        >
-                          <option hidden disabled value="">
-                            Please select parking
-                          </option>
-                          <option>None</option>
-                          <option>Small</option>
-                          <option>Medium</option>
-                          <option>Large</option>
-                        </Input>
+                          onBlur={() => {
+                            formik.setFieldTouched("parking");
+                          }}
+                          className={`${
+                            formik.touched.parking && formik.errors.parking
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                        />
                         <FormFeedback>{formik.errors.parking}</FormFeedback>
                       </FormGroup>
                     </Row>
