@@ -3,7 +3,7 @@ import fetcher from "@/utils/fetcher";
 import { Formik, Form as FormikForm } from "formik";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import {
   Button,
@@ -21,6 +21,7 @@ import Select from "react-select";
 import Lightbox from "yet-another-react-lightbox";
 import dynamic from "next/dynamic";
 import GetUserLocation from "@/components/GetUserLocation";
+import moment from "moment";
 
 const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
   ssr: false,
@@ -75,33 +76,20 @@ export default function AddPlacePage(props) {
   const { data: session, status } = useSession();
   console.log(session, "SESSIONNNNNNNNNN");
 
-  const cityOptions = [
-    {
-      value: 1,
-      label: "Jakarta Pusat",
-    },
-    {
-      value: 2,
-      label: "Jakarta Timur",
-    },
-    {
-      value: 3,
-      label: "Jakarta Selatan",
-    },
-    {
-      value: 4,
-      label: "Jakarta Barat",
-    },
-    {
-      value: 5,
-      label: "Jakarta Utara",
-    },
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   return (
     <div style={{ backgroundColor: "#f0f0f0", flex: 1 }}>
       <div className="container py-5">
-        <div className="card mx-auto" style={{ maxWidth: "600px" }}>
+        <div className="card mx-auto" style={{ maxWidth: "800px" }}>
           <div className="card-body py-4">
             <h4 className="text-center mb-4">Suggest New Place</h4>
             <Formik
@@ -114,8 +102,8 @@ export default function AddPlacePage(props) {
                 address: "",
                 parking: "",
                 phoneNumber: "",
-                openingHour: new Date(),
-                closingHour: new Date(),
+                openingHour: [null, null, null, null, null, null, null],
+                closingHour: [null, null, null, null, null, null, null],
                 latitude: 0,
                 longitude: 0,
               }}
@@ -132,8 +120,8 @@ export default function AddPlacePage(props) {
                   .required("Category is required"),
                 address: yup.string().required("Address is required"),
                 parking: yup.string().optional(),
-                openingHour: yup.string().required("Opening Hour is required"),
-                closingHour: yup.string().required("Closing Hour is required"),
+                // openingHour: yup.string().required("Opening Hour is required"),
+                // closingHour: yup.string().required("Closing Hour is required"),
               })}
               onSubmit={async (values, actions) => {
                 const { files, ...rest } = values;
@@ -143,7 +131,19 @@ export default function AddPlacePage(props) {
                   formData.append("files", file);
                 });
 
-                formData.append("data", JSON.stringify(rest));
+                formData.append(
+                  "data",
+                  JSON.stringify({
+                    ...rest,
+                    openingHour: rest.openingHour
+                      .map((el) => el || "null")
+                      .join(","),
+                    closingHour: rest.closingHour
+                      .map((el) => el || "null")
+                      .join(","),
+                  })
+                );
+
                 try {
                   const response = await fetcher.post(
                     "/post/create",
@@ -429,7 +429,6 @@ export default function AddPlacePage(props) {
                         <FormFeedback>{formik.errors.category}</FormFeedback>
                       </FormGroup>
                     </Row>
-
                     <Row>
                       <FormGroup tag={Col} md={{ size: 12 }}>
                         <Label for="parking">Parking</Label>
@@ -461,63 +460,143 @@ export default function AddPlacePage(props) {
 
                     <Row>
                       <Col md={{ size: 12 }}>
-                        <Row>
-                          <FormGroup tag={Col} md={{ size: 6 }}>
-                            <Label for="openingHour">Opening Hour</Label>
-                            <br></br>
-                            <DatePicker
-                              selected={formik.values.openingHour}
-                              onChange={(date) =>
-                                formik.setFieldValue("openingHour", date)
-                              }
-                              showTimeSelect
-                              showTimeSelectOnly
-                              dateFormat="hh:mm a"
-                              className={`form-control ${
-                                formik.errors.openingHour && "is-invalid"
-                              }`}
-                              wrapperClassName="cstm-datepicker"
-                            />
-                            <Input
-                              className="d-none"
-                              invalid={
-                                formik.errors.openingHour &&
-                                formik.touched.openingHour
-                              }
-                            />
-                            <FormFeedback>
-                              {formik.errors.openingHour}
-                            </FormFeedback>
-                          </FormGroup>
+                        <strong>Select working days</strong>
 
-                          <FormGroup tag={Col} md={{ size: 6 }}>
-                            <Label for="closingHour">Closing Hour</Label>
-                            <br></br>
-                            <DatePicker
-                              selected={formik.values.closingHour}
-                              onChange={(date) =>
-                                formik.setFieldValue("closingHour", date)
-                              }
-                              showTimeSelect
-                              showTimeSelectOnly
-                              dateFormat="hh:mm a"
-                              className={`form-control ${
-                                formik.errors.closingHour && "is-invalid"
-                              }`}
-                              wrapperClassName="cstm-datepicker"
-                            />
-                            <Input
-                              className="d-none"
-                              invalid={
-                                formik.errors.closingHour &&
-                                formik.touched.closingHour
-                              }
-                            />
-                            <FormFeedback>
-                              {formik.errors.closingHour}
-                            </FormFeedback>
-                          </FormGroup>
-                        </Row>
+                        <div className="d-flex gap-2 my-3">
+                          {days.map((day, index) => (
+                            <div>
+                              <input
+                                type="checkbox"
+                                className="btn-check"
+                                id={day}
+                                autocomplete="off"
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    formik.setFieldValue(
+                                      `openingHour[${index}]`,
+                                      moment(new Date())
+                                        .set("hours", 10) // set jam 10
+                                        .set("minutes", 0) // set menit 0
+                                        .set("seconds", 0) // set detik 0
+                                        .toDate()
+                                    );
+                                    formik.setFieldValue(
+                                      `closingHour[${index}]`,
+                                      moment(new Date())
+                                        .set("hours", 10)
+                                        .set("minutes", 0)
+                                        .set("seconds", 0)
+                                        .add(7, "hours") // ditambah 7 jam
+                                        .toDate()
+                                    );
+                                  } else {
+                                    formik.setFieldValue(
+                                      `openingHour[${index}]`,
+                                      null
+                                    );
+                                    formik.setFieldValue(
+                                      `closingHour[${index}]`,
+                                      null
+                                    );
+                                  }
+                                }}
+                              />
+                              <label
+                                className="btn btn-outline-primary"
+                                htmlFor={day}
+                              >
+                                {day}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="card ">
+                          <div className="card-body p-0">
+                            <table className="table align-middle table-borderless rounded overflow-hidden">
+                              <thead class="table-light">
+                                <tr className="border-bottom">
+                                  <th scope="col">Day</th>
+                                  <th scope="col">Start Time</th>
+                                  <th scope="col">End Time</th>
+                                  <th scope="col">Total Hours</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {formik.values.openingHour.some((a) => !!a) ? (
+                                  formik.values.openingHour.map((el, index) => (
+                                    <Fragment key={index}>
+                                      {el && (
+                                        <tr>
+                                          <td>{days[index]}</td>
+                                          <td>
+                                            <input
+                                              type="time"
+                                              className="form-control"
+                                              style={{
+                                                width: "fit-content",
+                                              }}
+                                              value={moment(
+                                                formik.values.openingHour[index]
+                                              ).format("HH:mm")}
+                                              onChange={(e) => {
+                                                formik.setFieldValue(
+                                                  `openingHour[${index}]`,
+                                                  moment(
+                                                    e.target.value,
+                                                    "HH:mm"
+                                                  ).toDate()
+                                                );
+                                              }}
+                                            />
+                                          </td>
+                                          <td>
+                                            <input
+                                              type="time"
+                                              className="form-control"
+                                              style={{
+                                                width: "fit-content",
+                                              }}
+                                              value={moment(
+                                                formik.values.closingHour[index]
+                                              ).format("HH:mm")}
+                                              onChange={(e) => {
+                                                formik.setFieldValue(
+                                                  `closingHour[${index}]`,
+                                                  moment(
+                                                    e.target.value,
+                                                    "HH:mm"
+                                                  ).toDate()
+                                                );
+                                              }}
+                                            />
+                                          </td>
+                                          <td>
+                                            {moment(
+                                              formik.values.closingHour[index]
+                                            ).diff(
+                                              moment(
+                                                formik.values.openingHour[index]
+                                              ),
+                                              "hours"
+                                            )}{" "}
+                                            hours
+                                          </td>
+                                        </tr>
+                                      )}
+                                    </Fragment>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan={4} className="text-center">
+                                      Please select working days
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                       </Col>
                     </Row>
 

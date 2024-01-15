@@ -44,6 +44,39 @@ import PlacesImageGrid from "@/components/PlacesImageGrid";
 
 const MySwal = withReactContent(Swal);
 
+const BusinessHourList = ({ openingHour, closingHour }) => {
+  const openingHours = openingHour
+    .split(",")
+    .map((nullOrDate) =>
+      nullOrDate == "null" ? "N/A" : moment(nullOrDate).format("HH:mm")
+    );
+  const closingHours = closingHour
+    .split(",")
+    .map((nullOrDate) =>
+      nullOrDate == "null" ? "N/A" : moment(nullOrDate).format("HH:mm")
+    );
+
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  return (
+    <ul>
+      {openingHours.map((openHour, index) => (
+        <li key={index}>
+          {days[index]}: {openHour} - {closingHours[index]}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 export default function DetailPlacesPage(props) {
   const { id, data, data2 } = props;
   const router = useRouter();
@@ -395,14 +428,13 @@ export default function DetailPlacesPage(props) {
               <span className="fw-semibold">Parking: </span>
               {data.parking}
             </p>
-            <p>
-              <span className="fw-semibold">Opening Hour: </span>
-              {moment(data.openingHour).format("h:mm A")}
-            </p>
-            <p>
-              <span className="fw-semibold">Closing Hour: </span>
-              {moment(data.closingHour).format("h:mm A")}
-            </p>
+            <span className="fw-semibold">
+              Business Hour:
+              <BusinessHourList
+                openingHour={data.openingHour}
+                closingHour={data.closingHour}
+              />
+            </span>
             <p>
               <span className="fw-semibold">Phone Number: </span>
               {data.phoneNumber}
