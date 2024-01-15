@@ -67,9 +67,9 @@ export default function DetailPlacesPage(props) {
     setIsModalReportOpen(!isModalReportOpen);
   };
 
-  const [isModalClaimOpen, setIsModalClaimOpen] = useState(false);
-  const toggleModalClaim = () => {
-    setIsModalClaimOpen(!isModalClaimOpen);
+  const [isModalVerifyOpen, setIsModalVerifyOpen] = useState(false);
+  const toggleModalVerify = () => {
+    setIsModalVerifyOpen(!isModalVerifyOpen);
   };
 
   const [showOtherInput, setShowOtherInput] = useState(false);
@@ -102,8 +102,8 @@ export default function DetailPlacesPage(props) {
               <DropdownItem onClick={toggleModalReport}>
                 Report Place
               </DropdownItem>
-              <DropdownItem onClick={toggleModalClaim}>
-                Claim Place
+              <DropdownItem onClick={toggleModalVerify}>
+                Verify Place
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -255,27 +255,28 @@ export default function DetailPlacesPage(props) {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={isModalClaimOpen} toggle={toggleModalClaim}>
-          <ModalHeader toggle={toggleModalClaim} className="text-center px-4">
-            Claim Place
+        <Modal isOpen={isModalVerifyOpen} toggle={toggleModalVerify}>
+          <ModalHeader toggle={toggleModalVerify} className="text-center px-4">
+            Verify Place
           </ModalHeader>
           <ModalBody className="mb-3">
             <Formik
               initialValues={{
-                message: "",
+                description: "",
+                files: [],
               }}
               validationSchema={yup.object().shape({
-                message: yup.string().required("Reason is required"),
+                description: yup.string().required("Description is required"),
               })}
               onSubmit={async (values, actions) => {
-                const { ...rest } = values;
+                const { files, ...rest } = values;
 
                 const formData = new FormData();
 
                 formData.append("data", JSON.stringify(rest));
                 try {
                   const response = await fetcher.post(
-                    "/post/report/",
+                    `/post/claim/${id}`,
                     formData,
                     {
                       headers: {
@@ -287,7 +288,7 @@ export default function DetailPlacesPage(props) {
 
                   MySwal.fire({
                     icon: "success",
-                    title: <p>Thank you for reporting!</p>,
+                    title: <p>You has succesfully submit your request!</p>,
                     showConfirmButton: true,
                     showDenyButton: false,
                   }).then(() => {
@@ -314,13 +315,35 @@ export default function DetailPlacesPage(props) {
                         className="text-center fw-semibold"
                         style={{ fontSize: "18px" }}
                       >
-                        <Label for="message">Why you report this place?</Label>
+                        <Label for="proof">
+                          Upload proof that showing you own this place
+                        </Label>
+                        <Input
+                          className="form-control"
+                          type="file"
+                          id="proof"
+                          multiple
+                        />
                       </FormGroup>
                     </Row>
-                    <div className="d-flex ms-auto">
-                      <Button color="light" onClick={toggleModalClaim}>
-                        Cancel
-                      </Button>
+                    <Row>
+                      <FormGroup tag={Col} md={{ size: 12 }} className="">
+                        <Label for="proof">Description</Label>
+                        <Input
+                          className="form-control"
+                          type="textarea"
+                          id="description"
+                          style={{ resize: "none" }}
+                        />
+                      </FormGroup>
+                    </Row>
+                    <div className="d-flex">
+                      <div className="ms-auto">
+                        <Button color="light" onClick={toggleModalVerify}>
+                          Cancel
+                        </Button>
+                      </div>
+
                       <div style={{ width: "80px" }} className="ms-3">
                         <Button
                           block
