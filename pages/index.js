@@ -111,31 +111,56 @@ export default function HomePage(props) {
         <h3 className="mt-5 mb-3">Our Recommendation</h3>
         <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
           {data.content.map((item, index) => (
-            <div key={index} className="col mb-3">
+            <div key={index} className="col mb-4">
               <Link
                 style={{ textDecoration: "none" }}
                 href={`/places/${item.id}`}
               >
-                <div className="card">
+                <div className="card" style={{ height: "100%" }}>
                   <img
                     src={`http://localhost:8080/${item.fileUrl}`}
                     class="card-img-top object-fit-cover"
                     width={150}
-                    height={225}
+                    height={180}
                     alt=""
                   />
                   <div className="card-body">
-                    <h6 className="card-title text-truncate">{item.title}</h6>
+                    <h6
+                      className="card-title"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        WebkitLineClamp: 2,
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.title}
+                    </h6>
+                    <span
+                      className="border border-1 rounded px-2 py-1 mb-3"
+                      style={{
+                        display: "inline-block",
+                        borderRadius: "10px",
+                        backgroundColor: "#ffc78f",
+                      }}
+                    >
+                      <p className="card-text" style={{ fontSize: "13px" }}>
+                        {item.category}
+                      </p>
+                    </span>
+
+                    <br />
                     <span className="card-text">
                       <MapPin className="me-1" size={18} />
                       {item.city}
                     </span>
-                    <p className="">
+                    <p className="m-0">
                       <Star
                         className="me-1"
                         size={18}
-                        color="yellow"
-                        fill="yellow"
+                        color="#ffe234"
+                        fill="#ffe234"
                       />
                       {item.averageRating} ({item.totalRating})
                     </p>
@@ -149,31 +174,56 @@ export default function HomePage(props) {
         <h3 className="mt-4 mb-3">Most Reviewed Places This Month</h3>
         <div className="row row-cols-2 row-cols-sm-3 row-cols-md-5">
           {data2.content.map((item, index) => (
-            <div key={index} className="col mb-3">
+            <div key={index} className="col mb-4">
               <Link
                 style={{ textDecoration: "none" }}
                 href={`/places/${item.id}`}
               >
-                <div className="card">
+                <div className="card" style={{ height: "100%" }}>
                   <img
                     src={`http://localhost:8080/${item.fileUrl}`}
                     class="card-img-top object-fit-cover"
                     width={150}
-                    height={225}
+                    height={180}
                     alt=""
                   />
                   <div className="card-body">
-                    <h6 className="card-title text-truncate">{item.title}</h6>
+                    <h6
+                      className="card-title"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        WebkitLineClamp: 2, // Limit to 2 lines
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.title}
+                    </h6>
+                    <span
+                      className="border border-1 rounded px-2 py-1 mb-3"
+                      style={{
+                        display: "inline-block",
+                        borderRadius: "10px",
+                        backgroundColor: "#ffc78f",
+                      }}
+                    >
+                      <p className="card-text" style={{ fontSize: "13px" }}>
+                        {item.category}
+                      </p>
+                    </span>
+
+                    <br />
                     <span className="card-text">
                       <MapPin className="me-1" size={18} />
                       {item.city}
                     </span>
-                    <p className="">
+                    <p className="m-0">
                       <Star
                         className="me-1"
                         size={18}
-                        color="yellow"
-                        fill="yellow"
+                        color="#ffe234"
+                        fill="#ffe234"
                       />
                       {item.averageRating} ({item.totalRating})
                     </p>

@@ -347,6 +347,20 @@ export default function PlacesPage(props) {
                         >
                           {item.title}
                         </h6>
+                        <span
+                          className="border border-1 rounded px-2 py-1 mb-3"
+                          style={{
+                            display: "inline-block",
+                            borderRadius: "10px",
+                            backgroundColor: "#ffc78f",
+                          }}
+                        >
+                          <p className="card-text" style={{ fontSize: "13px" }}>
+                            {item.category}
+                          </p>
+                        </span>
+
+                        <br />
                         <span className="card-text">
                           <MapPin className="me-1" size={18} />
                           {item.city}

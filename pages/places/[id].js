@@ -34,6 +34,7 @@ import {
   CarouselCaption,
 } from "reactstrap";
 import UserProfile from "@/components/UserProfile";
+import UserProfilePost from "@/components/UserProfilePost";
 import { useRouter } from "next/router";
 import * as yup from "yup";
 import { DebugFormik } from "@/components/DebugFormik";
@@ -41,6 +42,11 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Rating from "react-rating";
 import PlacesImageGrid from "@/components/PlacesImageGrid";
+import dynamic from "next/dynamic";
+
+const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
+  ssr: false,
+});
 
 const MySwal = withReactContent(Swal);
 
@@ -90,10 +96,15 @@ export default function DetailPlacesPage(props) {
   });
   console.log(items, "ITEMS!!!");
   const [previewImages, setPreviewImages] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
+  const toggleDropdownReview = () => {
+    setIsDropdownReviewOpen(!isDropdownReviewOpen);
   };
 
   const [isModalReportOpen, setIsModalReportOpen] = useState(false);
@@ -130,7 +141,7 @@ export default function DetailPlacesPage(props) {
             toggle={toggleDropdown}
           >
             <DropdownToggle caret={false} color="none" className="">
-              <MoreVertical></MoreVertical>
+              <MoreVertical />
             </DropdownToggle>
             <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
               <DropdownItem onClick={toggleModalReport}>
@@ -139,6 +150,7 @@ export default function DetailPlacesPage(props) {
               <DropdownItem onClick={toggleModalVerify}>
                 Verify Place
               </DropdownItem>
+              <DropdownItem>Edit Place</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -409,12 +421,12 @@ export default function DetailPlacesPage(props) {
         </div>
 
         <div className="mt-3">
-          <UserProfile
+          <UserProfilePost
             profilePic={data.user.profileUrl}
             profileName={data.user.username}
             createdDate={data.createdDate}
             creator={data.creator.username}
-          ></UserProfile>
+          ></UserProfilePost>
         </div>
 
         <Card className="mt-4">
@@ -430,6 +442,10 @@ export default function DetailPlacesPage(props) {
         <div className="d-flex mt-3 justify-content-between">
           <Card className="" style={{ width: "600px" }}>
             <CardBody>
+              <p>
+                <span className="fw-semibold">Category: </span>
+                {data.category.category}
+              </p>
               <span>
                 <span className="fw-semibold">Business Hour:</span>
 
@@ -450,6 +466,19 @@ export default function DetailPlacesPage(props) {
           </Card>
           <Card className="" style={{ width: "650px" }}>
             <CardBody>
+              <div
+                id="map"
+                className="mb-3"
+                style={{
+                  height: 200,
+                  pointerEvents: "none",
+                }}
+              >
+                <MapWithNoSSR
+                  position={[data.latitude, data.longitude]}
+                  zoom={18}
+                />
+              </div>
               <p>
                 <span className="fw-semibold">Address:</span>
                 <br />
@@ -651,11 +680,30 @@ export default function DetailPlacesPage(props) {
         {data2.content.map((item, index) => {
           return (
             <div key={index} className="border p-3">
-              <UserProfile
-                profilePic={item.user.profileUrl}
-                profileName={item.user.username}
-                createdDate={item.createdDate}
-              ></UserProfile>
+              <div className="d-flex justify-content-between">
+                <UserProfile
+                  profilePic={item.user.profileUrl}
+                  profileName={item.user.username}
+                  createdDate={item.createdDate}
+                ></UserProfile>
+                <Dropdown
+                  className=""
+                  isOpen={isDropdownReviewOpen}
+                  toggle={toggleDropdownReview}
+                >
+                  <DropdownToggle caret={false} color="none" className="">
+                    <MoreVertical />
+                  </DropdownToggle>
+                  <DropdownMenu
+                    className="mt-1 ms-3"
+                    style={{ minWidth: "100px" }}
+                  >
+                    <DropdownItem>Report Review</DropdownItem>
+                    <DropdownItem>Edit Review</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+
               <div className="" style={{ paddingLeft: "70px" }}>
                 <div>
                   <Rating
