@@ -3,7 +3,7 @@ import fetcher from "@/utils/fetcher";
 import { Formik, Form as FormikForm } from "formik";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import {
   Button,
@@ -21,6 +21,7 @@ import Select from "react-select";
 import Lightbox from "yet-another-react-lightbox";
 import dynamic from "next/dynamic";
 import GetUserLocation from "@/components/GetUserLocation";
+import moment from "moment";
 
 const MapWithNoSSR = dynamic(() => import("../../../components/Maps/Map"), {
   ssr: false,
@@ -101,8 +102,16 @@ export default function EditPlacePage(props) {
                 address: data.address,
                 parking: data.parking,
                 phoneNumber: data.phoneNumber,
-                openingHour: [null, null, null, null, null, null, null],
-                closingHour: [null, null, null, null, null, null, null],
+                openingHour: data.openingHour
+                  .split(",")
+                  .map((nullOrDate) =>
+                    nullOrDate == "null" ? null : moment(nullOrDate).toDate()
+                  ),
+                closingHour: data.closingHour
+                  .split(",")
+                  .map((nullOrDate) =>
+                    nullOrDate == "null" ? null : moment(nullOrDate).toDate()
+                  ),
                 latitude: data.latitude,
                 longitude: data.longitude,
               }}
