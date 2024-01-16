@@ -295,22 +295,29 @@ export default function DetailPlacesPage(props) {
           <ModalBody className="mb-3">
             <Formik
               initialValues={{
-                description: "",
                 files: [],
+                description: "",
               }}
               validationSchema={yup.object().shape({
+                files: yup.array().required("Files is required"),
                 description: yup.string().required("Description is required"),
               })}
               onSubmit={async (values, actions) => {
                 const { files, ...rest } = values;
 
                 const formData = new FormData();
+                files.forEach((file, index) => {
+                  formData.append("files", file);
+                });
 
                 formData.append("data", JSON.stringify(rest));
                 try {
                   const response = await fetcher.post(
                     `/post/claim/${id}`,
-                    formData,
+                    {
+                      formData,
+                      description: values.description,
+                    },
                     {
                       headers: {
                         "Content-Type": "multipart/form-data",
@@ -361,12 +368,13 @@ export default function DetailPlacesPage(props) {
                     </Row>
                     <Row>
                       <FormGroup tag={Col} md={{ size: 12 }} className="">
-                        <Label for="proof">Description</Label>
+                        <Label for="description">Description</Label>
                         <Input
                           className="form-control"
+                          placeholder="Describe more about your proof..."
                           type="textarea"
                           id="description"
-                          style={{ resize: "none" }}
+                          style={{ resize: "none", height: "100px" }}
                         />
                       </FormGroup>
                     </Row>

@@ -460,7 +460,7 @@ export default function AddPlacePage(props) {
 
                     <Row>
                       <Col md={{ size: 12 }}>
-                        <strong>Select working days</strong>
+                        <strong>Select business hours</strong>
 
                         <div className="d-flex gap-2 my-3">
                           {days.map((day, index) => (
@@ -589,7 +589,7 @@ export default function AddPlacePage(props) {
                                 ) : (
                                   <tr>
                                     <td colSpan={4} className="text-center">
-                                      Please select working days
+                                      Please select business hours
                                     </td>
                                   </tr>
                                 )}
@@ -601,7 +601,7 @@ export default function AddPlacePage(props) {
                     </Row>
 
                     <Row>
-                      <FormGroup tag={Col} md={{ size: 12 }}>
+                      <FormGroup tag={Col} md={{ size: 12 }} className="mt-3">
                         <Label for="phoneNumber">Phone Number</Label>
                         <Input
                           id="phoneNumber"
