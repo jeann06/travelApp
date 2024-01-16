@@ -151,6 +151,7 @@ export default function DetailPlacesPage(props) {
                 Verify Place
               </DropdownItem>
               <DropdownItem>Edit Place</DropdownItem>
+              <DropdownItem>Delete Place</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -700,6 +701,7 @@ export default function DetailPlacesPage(props) {
                   >
                     <DropdownItem>Report Review</DropdownItem>
                     <DropdownItem>Edit Review</DropdownItem>
+                    <DropdownItem>Delete Review</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>

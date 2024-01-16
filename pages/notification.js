@@ -47,7 +47,7 @@ export async function getServerSideProps(ctx) {
 
   try {
     const response = await fetcher.get(
-      `/notification/notifications/get?page=0&size=2`,
+      `/notification/notifications/get?page=0&size=10`,
       {
         headers: {
           Authorization: `Bearer ${sessionData.user.token}`,
