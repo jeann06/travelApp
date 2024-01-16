@@ -416,40 +416,50 @@ export default function DetailPlacesPage(props) {
           ></UserProfile>
         </div>
 
-        <h2 className="mt-4">Detail</h2>
-        <Card className="mt-2">
+        <Card className="mt-4">
           <CardBody>
             <p>
               <span className="fw-semibold">Description:</span>
               <br />
               {data.description}
             </p>
-            <p>
-              <span className="fw-semibold">Address:</span>
-              <br />
-              {data.address}
-            </p>
-            <p>
-              <span className="fw-semibold">City: </span>
-              {data.city}
-            </p>
-            <p>
-              <span className="fw-semibold">Parking: </span>
-              {data.parking}
-            </p>
-            <span className="fw-semibold">
-              Business Hour:
-              <BusinessHourList
-                openingHour={data.openingHour}
-                closingHour={data.closingHour}
-              />
-            </span>
-            <p>
-              <span className="fw-semibold">Phone Number: </span>
-              {data.phoneNumber}
-            </p>
           </CardBody>
         </Card>
+
+        <div className="d-flex mt-3 justify-content-between">
+          <Card className="" style={{ width: "600px" }}>
+            <CardBody>
+              <p>
+                <span className="fw-semibold">Parking: </span>
+                {data.parking}
+              </p>
+              <span className="fw-semibold">
+                Business Hour:
+                <BusinessHourList
+                  openingHour={data.openingHour}
+                  closingHour={data.closingHour}
+                />
+              </span>
+              <p>
+                <span className="fw-semibold">Phone Number: </span>
+                {data.phoneNumber}
+              </p>
+            </CardBody>
+          </Card>
+          <Card className="" style={{ width: "650px" }}>
+            <CardBody>
+              <p>
+                <span className="fw-semibold">Address:</span>
+                <br />
+                {data.address}
+              </p>
+              <p>
+                <span className="fw-semibold">City: </span>
+                {data.city}
+              </p>
+            </CardBody>
+          </Card>
+        </div>
 
         <h2 className="mt-4">Review</h2>
         {status === "authenticated" ? (
@@ -676,16 +686,16 @@ export default function DetailPlacesPage(props) {
 
                 <div className="d-flex gap-3">
                   <Button
-                    color="none"
                     size="sm"
+                    color="none"
                     // color={
                     //   session?.user?.username === item.username
                     //     ? "primary"
                     //     : "light"
                     // }
-                    // ["jeanie", "ashieldx", ...]
+                    //
                     // color={
-                    //   item.someArray.find((u) => session?.user?.username === u)
+                    //   item.data.find((u) => session?.user?.username === u)
                     //     ? "primary"
                     //     : "light"
                     // }
