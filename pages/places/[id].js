@@ -70,7 +70,8 @@ const BusinessHourList = ({ openingHour, closingHour }) => {
     <ul>
       {openingHours.map((openHour, index) => (
         <li key={index}>
-          {days[index]}: {openHour} - {closingHours[index]}
+          <span className="fw-semibold">{days[index]}:</span> {openHour} -{" "}
+          {closingHours[index]}
         </li>
       ))}
     </ul>
@@ -429,17 +430,18 @@ export default function DetailPlacesPage(props) {
         <div className="d-flex mt-3 justify-content-between">
           <Card className="" style={{ width: "600px" }}>
             <CardBody>
-              <p>
-                <span className="fw-semibold">Parking: </span>
-                {data.parking}
-              </p>
-              <span className="fw-semibold">
-                Business Hour:
+              <span>
+                <span className="fw-semibold">Business Hour:</span>
+
                 <BusinessHourList
                   openingHour={data.openingHour}
                   closingHour={data.closingHour}
                 />
               </span>
+              <p>
+                <span className="fw-semibold">Parking: </span>
+                {data.parking}
+              </p>
               <p>
                 <span className="fw-semibold">Phone Number: </span>
                 {data.phoneNumber}
