@@ -102,9 +102,29 @@ export default function DetailPlacesPage(props) {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
-  const toggleDropdownReview = () => {
-    setIsDropdownReviewOpen(!isDropdownReviewOpen);
+  const ReviewDropdownAction = ({ review }) => {
+    const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
+
+    const toggleDropdownReview = () => {
+      setIsDropdownReviewOpen(!isDropdownReviewOpen);
+    };
+
+    return (
+      <Dropdown
+        className=""
+        isOpen={isDropdownReviewOpen}
+        toggle={toggleDropdownReview}
+      >
+        <DropdownToggle caret={false} color="none" className="">
+          <MoreVertical />
+        </DropdownToggle>
+        <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
+          <DropdownItem>Report Review</DropdownItem>
+          <DropdownItem>Edit Review</DropdownItem>
+          <DropdownItem>Delete Review</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    );
   };
 
   const [isModalReportOpen, setIsModalReportOpen] = useState(false);
@@ -687,23 +707,7 @@ export default function DetailPlacesPage(props) {
                   profileName={item.user.username}
                   createdDate={item.createdDate}
                 ></UserProfile>
-                <Dropdown
-                  className=""
-                  isOpen={isDropdownReviewOpen}
-                  toggle={toggleDropdownReview}
-                >
-                  <DropdownToggle caret={false} color="none" className="">
-                    <MoreVertical />
-                  </DropdownToggle>
-                  <DropdownMenu
-                    className="mt-1 ms-3"
-                    style={{ minWidth: "100px" }}
-                  >
-                    <DropdownItem>Report Review</DropdownItem>
-                    <DropdownItem>Edit Review</DropdownItem>
-                    <DropdownItem>Delete Review</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
+                <ReviewDropdownAction review={item}></ReviewDropdownAction>
               </div>
 
               <div className="" style={{ paddingLeft: "70px" }}>
@@ -738,19 +742,14 @@ export default function DetailPlacesPage(props) {
 
                 <div className="d-flex gap-3">
                   <Button
+                    color={
+                      item.likedUsers.find(
+                        (user) => user.username === session?.user?.username
+                      )
+                        ? "primary"
+                        : "none"
+                    }
                     size="sm"
-                    color="none"
-                    // color={
-                    //   session?.user?.username === item.username
-                    //     ? "primary"
-                    //     : "light"
-                    // }
-                    //
-                    // color={
-                    //   item.data.find((u) => session?.user?.username === u)
-                    //     ? "primary"
-                    //     : "light"
-                    // }
                     className="mt-2 d-flex justify-content-center align-items-center"
                     onClick={async () => {
                       const response = await fetcher.post(
@@ -814,6 +813,15 @@ export async function getServerSideProps(ctx) {
   );
   const data = response.data.data;
   const data2 = responseReview.data.data;
+
+  for (let i = 0; i < data2.content.length; i++) {
+    const reviewId = data2.content[i].id;
+    const responseLikedUsers = await fetcher.get(
+      `/review/like/getUsers/${reviewId}`
+    );
+    const likedUsers = responseLikedUsers?.data?.data;
+    data2.content[i].likedUsers = likedUsers;
+  }
   return {
     props: {
       id,
