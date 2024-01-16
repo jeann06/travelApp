@@ -1,6 +1,6 @@
 import moment from "moment";
 
-const UserProfile = ({ profilePic, profileName, createdDate }) => {
+const UserProfile = ({ profilePic, profileName, createdDate, creator }) => {
   return (
     <div className="d-flex align-items-center">
       <div
@@ -18,7 +18,10 @@ const UserProfile = ({ profilePic, profileName, createdDate }) => {
       </div>
       <div className="ms-3">
         <div>{profileName}</div>
-        <div>Posted on {moment(createdDate).format("DD MMMM YYYY h:mm A")}</div>
+        <div>
+          Posted by {creator} on{" "}
+          {moment(createdDate).format("DD MMMM YYYY h:mm A")}
+        </div>
       </div>
     </div>
   );

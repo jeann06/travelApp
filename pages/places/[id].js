@@ -412,6 +412,7 @@ export default function DetailPlacesPage(props) {
             profilePic={data.user.profileUrl}
             profileName={data.user.username}
             createdDate={data.createdDate}
+            creator={data.creator.username}
           ></UserProfile>
         </div>
 
