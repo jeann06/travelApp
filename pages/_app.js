@@ -9,18 +9,28 @@ import "react-clock/dist/Clock.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "yet-another-react-lightbox/styles.css";
 import "@/styles/globals.css";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 
+const queryClient = new QueryClient();
 const App = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
-    <SessionProvider session={session}>
-      <div
-        className=""
-        style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-      >
-        <AppBar />
-        <Component {...pageProps} />
-      </div>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider session={session}>
+        <div
+          className=""
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <AppBar />
+          <Component {...pageProps} />
+        </div>
+        <ReactQueryDevtools />
+      </SessionProvider>
+    </QueryClientProvider>
   );
 };
 

@@ -51,7 +51,7 @@ const LoginButton = () => {
   const { data: session } = useSession();
   console.log(session, "SESSION!");
   return (
-    <div className="ms-3 flex gap-2">
+    <div className="ms-3 flex gap-2 user-select-none">
       {!session && (
         <button
           type="button"

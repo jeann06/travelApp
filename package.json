@@ -27,6 +27,7 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-geosearch": "^0.3.4",
     "react-paginate": "^8.2.0",
+    "react-query": "^3.39.3",
     "react-rating": "^2.0.5",
     "react-select": "^5.8.0",
     "react-text-truncate": "^0.19.0",

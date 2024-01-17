@@ -13,23 +13,129 @@ import {
   DropdownMenu,
   DropdownItem,
   NavbarText,
+  Dropdown,
+  Badge,
 } from "reactstrap";
 import Link from "next/link";
 import { Bell } from "react-feather";
+import { useSession } from "next-auth/react";
+import { useMutation, useQuery } from "react-query";
+import fetcher from "@/utils/fetcher";
+import moment from "moment";
+
+const NotificationButton = () => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggle = () => setDropdownOpen((prev) => !prev);
+
+  const { data: session, status } = useSession();
+  const query = useQuery(
+    ["notifications", "0", "10"],
+    async () => {
+      const res = await fetcher.get(
+        "/notification/notifications/get?page=0&size=10",
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.token}`,
+          },
+        }
+      );
+      return res.data;
+    },
+    {
+      enabled: status === "authenticated",
+    }
+  );
+
+  const readAll = useMutation(
+    ["readAllNotifications"],
+    async () => {
+      const res = await fetcher.get("/notification/notifications/readAll", {
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`,
+        },
+      });
+
+      return res.data;
+    },
+    {
+      onSuccess: () => {
+        query.refetch();
+      },
+    }
+  );
+
+  if (query.isLoading || status !== "authenticated") {
+    return null;
+  }
+
+  return (
+    <div>
+      <Dropdown
+        className="text-end ms-auto"
+        isOpen={dropdownOpen}
+        toggle={toggle}
+        direction="down"
+      >
+        <DropdownToggle className="position-relative" caret={false} tag="div">
+          <Bell className="" role="button" />
+          {query.data.data.content.filter((n) => !n.read).length > 0 && (
+            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {query.data.data.content.filter((n) => !n.read).length}
+            </span>
+          )}
+        </DropdownToggle>
+        <DropdownMenu
+          className="mt-1 p-2 rounded-3 mx-0 shadow"
+          style={{
+            maxHeight: "450px",
+            overflow: "scroll",
+            overflowX: "hidden",
+          }}
+        >
+          <div className="d-grid gap-1">
+            {query.data.data.content.map((notification) => (
+              <DropdownItem
+                key={notification.id}
+                className={`rounded-2 p-3 ${
+                  notification.read ? "" : "bg-danger-subtle"
+                }`}
+                tag={Link}
+                href={`/places/${notification.postId}`}
+              >
+                <div
+                  className="d-flex gap-2 align-items-center"
+                  style={{ fontSize: 14 }}
+                >
+                  <span className="badge badge-sm bg-primary">
+                    {notification.category}
+                  </span>
+                  &middot;
+                  <span>{moment(notification.createdDate).fromNow()}</span>
+                </div>
+                <strong>{notification.title}</strong>
+                <div>{notification.message}</div>
+              </DropdownItem>
+            ))}
+          </div>
+          <div className="d-flex justify-content-between align-items-center py-2">
+            <button className="btn btn-sm btn-primary">See More</button>
+            <button
+              className="btn btn-sm btn-danger"
+              onClick={() => readAll.mutate()}
+            >
+              Read All
+            </button>
+          </div>
+        </DropdownMenu>
+      </Dropdown>
+    </div>
+  );
+};
 
 function Example(args) {
   const [isOpen, setIsOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
 
   const toggle = () => setIsOpen(!isOpen);
-
-  const handleNotificationClick = () => {
-    // Logic to handle notification click, e.g., show a notification
-    // For simplicity, increment the count here
-    setNotificationCount(notificationCount + 1);
-    // You can add further logic here, like displaying a notification
-    // using a library or browser's Notification API
-  };
 
   return (
     <div>
@@ -50,28 +156,7 @@ function Example(args) {
               <NavLink href="/">About Us</NavLink>
             </NavItem>
           </Nav>
-          <div style={{ position: "relative" }}>
-            <Bell className="" onClick={handleNotificationClick} />
-            {notificationCount > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  background: "red",
-                  borderRadius: "50%",
-                  padding: "3px",
-                  color: "white",
-                  fontSize: "12px",
-                  height: "20px",
-                  width: "20px",
-                }}
-                className="text-center align-items-center"
-              >
-                {notificationCount}
-              </span>
-            )}
-          </div>
+          <NotificationButton />
           <LoginButton />
         </Collapse>
       </Navbar>
