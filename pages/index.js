@@ -116,7 +116,7 @@ export default function HomePage(props) {
                 style={{ textDecoration: "none" }}
                 href={`/places/${item.id}`}
               >
-                <div className="card" style={{ height: "100%" }}>
+                <div className="card">
                   <img
                     src={`http://localhost:8080/${item.fileUrl}`}
                     class="card-img-top object-fit-cover"
@@ -125,20 +125,8 @@ export default function HomePage(props) {
                     alt=""
                   />
                   <div className="card-body">
-                    <h6
-                      className="card-title"
-                      style={{
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        WebkitLineClamp: 2,
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {item.title}
-                    </h6>
                     <span
-                      className="border border-1 rounded px-2 py-1 mb-3"
+                      className="border border-1 rounded px-2 py-1 mb-2"
                       style={{
                         display: "inline-block",
                         borderRadius: "10px",
@@ -149,8 +137,16 @@ export default function HomePage(props) {
                         {item.category}
                       </p>
                     </span>
+                    <h6
+                      className="card-title"
+                      style={{
+                        overflow: "hidden",
+                        height: "40px",
+                      }}
+                    >
+                      {item.title}
+                    </h6>
 
-                    <br />
                     <span className="card-text">
                       <MapPin className="me-1" size={18} />
                       {item.city}
