@@ -11,23 +11,16 @@ import "yet-another-react-lightbox/styles.css";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import DefaultLayout from "@/components/layouts/DefaultLayout";
 
 const queryClient = new QueryClient();
 const App = ({ Component, pageProps: { session, ...pageProps } }) => {
+  const getLayout =
+    Component.getLayout || ((page) => <DefaultLayout>{page}</DefaultLayout>);
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
-        <div
-          className=""
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <AppBar />
-          <Component {...pageProps} />
-        </div>
+        {getLayout(<Component {...pageProps} />)}
         <ReactQueryDevtools />
       </SessionProvider>
     </QueryClientProvider>

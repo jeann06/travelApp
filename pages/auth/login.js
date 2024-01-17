@@ -1,106 +1,129 @@
-import TextBox from "@/components/elements/TextBox";
+import SwalBootstrap from "@/components/alert/SwalBootstrap";
+import AuthLayout from "@/components/layouts/AuthLayout";
+import { Formik, Form as FormikForm } from "formik";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useRef } from "react";
-import { Button } from "reactstrap";
+import { Button, Spinner } from "reactstrap";
 
-const backgroundImage = 'https://wallpapers.com/images/hd/jakarta-city-roundabout-957wm6er9fu1zp8p.jpg';
-
-const LoginPage = () => {
+const LoginForm = () => {
   const router = useRouter();
-  const userName = useRef("");
-  const pass = useRef("");
-
-  const onSubmit = async () => {
-    const result = await signIn("credentials", {
-      username: userName.current,
-      password: pass.current,
-      redirect: true,
-      callbackUrl:
-        typeof router.query.callbackUrl === "string"
-          ? router.query.callbackUrl
-          : "/",
-    });
-  };
-
-  const pageStyle = {
-    background: `url(${backgroundImage}) no-repeat center center fixed`,
-    backgroundSize: 'cover',
-    height: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  };
-
-  const containerStyle = {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-    border: '1px solid #ddd', 
-    borderRadius: '20px',
-    padding: '20px',
-    width: '400px', 
-  };
-
   return (
-    <div className="d-flex align-items-center py-4 full-height-page" style={pageStyle}>
-      <div
-        className="form-signin"
-        style={containerStyle}
-      >
-        <form>
-          <h1 className="h3 mb-3 fw-normal text-center">Have an account?</h1>
+    <Formik
+      initialValues={{
+        username: "",
+        password: "",
+      }}
+      onSubmit={async (values, { setFieldError }) => {
+        const callbackUrl =
+          typeof router.query.callbackUrl === "string"
+            ? router.query.callbackUrl
+            : "/";
+
+        const authResponse = await signIn("credentials", {
+          username: values.username,
+          password: values.password,
+          redirect: false,
+        });
+
+        if (!authResponse.ok) {
+          setFieldError("username", "Credentials are invalid");
+          return SwalBootstrap.fire({
+            icon: "error",
+            title: "Error",
+            text: "Credentials are invalid",
+          });
+        }
+
+        SwalBootstrap.fire({
+          icon: "success",
+          title: "Success",
+          text: "Logged in successfully. Redirecting in 2 seconds...",
+          timer: 2000,
+        }).then(() => {
+          router.push(callbackUrl);
+        });
+      }}
+    >
+      {({ handleChange, isSubmitting, errors, touched }) => (
+        <FormikForm>
           <div className="form-floating mb-3">
             <input
-              type="email"
+              type="text"
               className="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
-              onChange={(e) => (userName.current = e.target.value)}
+              autoComplete="username"
+              id="username"
+              placeholder="Username"
+              onChange={handleChange}
             />
-            <label htmlFor="floatingInput" className="text-secondary">Email address</label>
-          </div>
-          <div className="form-floating mb-3">
-            <input
-              type="password"
-              className="form-control"
-              id="floatingPassword"
-              placeholder="Password"
-              onChange={(e) => (pass.current = e.target.value)}
-            />
-            <label htmlFor="floatingPassword" className="text-secondary"x>Password</label>
-          </div>
-          <div className="form-check text-start mb-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              defaultValue="remember-me"
-              id="flexCheckDefault"
-            />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              Remember me
+            <label htmlFor="username" className="text-secondary">
+              Username
             </label>
           </div>
 
-          <div className="d-grid gap-2">
-            <Button className="bg-primary" onClick={onSubmit}>
-              Login
+          <div className="form-floating">
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              placeholder="Password"
+              onChange={handleChange}
+            />
+            <label htmlFor="password" className="text-secondary">
+              Password
+            </label>
+          </div>
+
+          {touched.username && errors.username && (
+            <div className="text-danger text-center my-3">
+              {errors.username}
+            </div>
+          )}
+
+          <div className="d-grid mt-4">
+            <Button type="submit" color="primary" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Spinner size="sm" className="me-2" />
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </Button>
           </div>
-          <p className="mt-3">
-            Don't have an account?{" "}
-            <Link
-              href="/auth/register"
-              style={{
-                textDecoration: "none",
-              }}
-            >
-              Register Now
-            </Link>
-          </p>
-        </form>
+        </FormikForm>
+      )}
+    </Formik>
+  );
+};
+
+const LoginPage = () => {
+  return (
+    <div
+      className="card border-0"
+      style={{
+        maxWidth: "370px",
+        margin: "auto",
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+      }}
+    >
+      <div className="card-body">
+        <h1 className="fs-2 fw-bolder mb-3 text-center">Have an account?</h1>
+        <LoginForm />
+      </div>
+      <div className="card-footer p-3">
+        Don't have an account?{" "}
+        <Link href="/auth/register" className="text-decoration-none">
+          Register Now
+        </Link>
       </div>
     </div>
   );
+};
+
+LoginPage.getLayout = function getLayout(page) {
+  return <AuthLayout>{page}</AuthLayout>;
 };
 
 export default LoginPage;
