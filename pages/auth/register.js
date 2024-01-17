@@ -2,7 +2,7 @@ import SwalBootstrap from "@/components/alert/SwalBootstrap";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import fetcher from "@/utils/fetcher";
 import { Formik, Form as FormikForm } from "formik";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { Button, FormFeedback, Spinner } from "reactstrap";
 import * as yup from "yup";
@@ -203,3 +203,24 @@ RegisterPage.getLayout = function getLayout(page) {
 };
 
 export default RegisterPage;
+
+export async function getServerSideProps(ctx) {
+  // START
+  // Ini bagian untuk ngecheck apakah user sudah login atau belum
+  const sessionData = await getSession(ctx);
+
+  if (sessionData) {
+    // Jika user belum login maka kita akan redirect dia ke page /auth/login dengan
+    // query callbackUrlnya
+    return {
+      redirect: {
+        destination: "/",
+        permanent: true,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
