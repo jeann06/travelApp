@@ -44,7 +44,7 @@ import Rating from "react-rating";
 import PlacesImageGrid from "@/components/PlacesImageGrid";
 import dynamic from "next/dynamic";
 
-const ReviewDropdownAction = ({ review }) => {
+const ReviewDropdownAction = ({ review, session }) => {
   const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
 
   const toggleDropdownReview = () => {
@@ -62,8 +62,12 @@ const ReviewDropdownAction = ({ review }) => {
       </DropdownToggle>
       <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
         <DropdownItem>Report Review</DropdownItem>
-        <DropdownItem>Edit Review</DropdownItem>
-        <DropdownItem>Delete Review</DropdownItem>
+        {session?.user?.username === review.user.username && (
+          <>
+            <DropdownItem>Edit Review</DropdownItem>
+            <DropdownItem>Delete Review</DropdownItem>
+          </>
+        )}
       </DropdownMenu>
     </Dropdown>
   );
@@ -170,8 +174,12 @@ export default function DetailPlacesPage(props) {
               <DropdownItem onClick={toggleModalVerify}>
                 Verify Place
               </DropdownItem>
-              <DropdownItem>Edit Place</DropdownItem>
-              <DropdownItem>Delete Place</DropdownItem>
+              {session?.user?.username === data.user.username && (
+                <>
+                  <DropdownItem>Edit Place</DropdownItem>
+                  <DropdownItem>Delete Place</DropdownItem>
+                </>
+              )}
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -708,7 +716,10 @@ export default function DetailPlacesPage(props) {
                   profileName={item.user.username}
                   createdDate={item.createdDate}
                 ></UserProfile>
-                <ReviewDropdownAction review={item}></ReviewDropdownAction>
+                <ReviewDropdownAction
+                  review={item}
+                  session={session}
+                ></ReviewDropdownAction>
               </div>
 
               <div className="" style={{ paddingLeft: "70px" }}>
