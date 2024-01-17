@@ -3,7 +3,7 @@ import fetcher from "@/utils/fetcher";
 import { Formik, Form as FormikForm } from "formik";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import {
   Button,
@@ -22,6 +22,8 @@ import Lightbox from "yet-another-react-lightbox";
 import dynamic from "next/dynamic";
 import GetUserLocation from "@/components/GetUserLocation";
 import moment from "moment";
+import { PlusCircle, Trash2 } from "react-feather";
+import { successAlertNotification } from "@/components/alert/Alert";
 
 const MapWithNoSSR = dynamic(() => import("../../../components/Maps/Map"), {
   ssr: false,
@@ -73,6 +75,10 @@ const days = [
 
 export default function EditPlacePage(props) {
   const { dataCategory, data, id } = props;
+  const [images, setImages] = useState([]);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const categoryOptions = useMemo(() => {
     return dataCategory.map((item, index) => {
       return {
@@ -81,10 +87,38 @@ export default function EditPlacePage(props) {
       };
     });
   }, []);
-  const [previewImages, setPreviewImages] = useState([]);
-  const router = useRouter();
-  const { data: session, status } = useSession();
-  console.log(data, "DATA");
+
+  useEffect(() => {
+    let isFetching = false;
+
+    async function fetchImagesFromServer() {
+      for (let i = 0; i < data.postDetails.length; i++) {
+        const item = data.postDetails[i];
+        const destinationPath = `/${item.url}${item.fileName}`; // /uploads/post_details/Testing_0.jpg
+
+        const blobResponse = await fetcher.get(destinationPath, {
+          responseType: "blob",
+        });
+        const blob = blobResponse.data;
+
+        const file = new File([blob], item.fileName, { type: blob.type });
+
+        if (!isFetching) {
+          setImages((prev) => [...prev, file]);
+        }
+      }
+    }
+
+    if (images.length > 0) {
+      return;
+    }
+
+    fetchImagesFromServer();
+
+    return () => {
+      isFetching = true;
+    };
+  }, []);
 
   return (
     <div style={{ backgroundColor: "#f0f0f0", flex: 1 }}>
@@ -93,15 +127,15 @@ export default function EditPlacePage(props) {
           <div className="card-body py-4">
             <h4 className="text-center mb-4">Edit Place</h4>
             <Formik
+              enableReinitialize
               initialValues={{
-                files: [],
+                files: images || [],
                 title: data.title,
                 description: data.description,
                 city: data.city,
                 category: data.category,
                 address: data.address,
                 parking: data.parking,
-                phoneNumber: data.phoneNumber,
                 openingHour: data.openingHour
                   .split(",")
                   .map((nullOrDate) =>
@@ -112,6 +146,7 @@ export default function EditPlacePage(props) {
                   .map((nullOrDate) =>
                     nullOrDate == "null" ? null : moment(nullOrDate).toDate()
                   ),
+                phoneNumber: data.phoneNumber,
                 latitude: data.latitude,
                 longitude: data.longitude,
               }}
@@ -138,11 +173,22 @@ export default function EditPlacePage(props) {
                 files.forEach((file, index) => {
                   formData.append("files", file);
                 });
+                formData.append(
+                  "data",
+                  JSON.stringify({
+                    ...rest,
+                    openingHour: rest.openingHour
+                      .map((el) => el || "null")
+                      .join(","),
+                    closingHour: rest.closingHour
+                      .map((el) => el || "null")
+                      .join(","),
+                  })
+                );
 
-                formData.append("data", JSON.stringify(rest));
                 try {
-                  const response = await fetcher.post(
-                    `/post/edit/${id}`,
+                  const response = await fetcher.put(
+                    `/post/edit/${props.id}`,
                     formData,
                     {
                       headers: {
@@ -156,6 +202,16 @@ export default function EditPlacePage(props) {
                     if (
                       typeof response.data.responseSchema.message === "string"
                     ) {
+                      if (
+                        response.data.responseSchema.message ===
+                        "Duplicate Title"
+                      ) {
+                        actions.setFieldError(
+                          "title",
+                          response.data.responseSchema.message
+                        );
+                      }
+
                       return MySwal.fire({
                         icon: "error",
                         title: <p>{response.data.responseSchema.message}</p>,
@@ -174,12 +230,10 @@ export default function EditPlacePage(props) {
 
                   const id = response.data.data.id;
 
-                  MySwal.fire({
-                    icon: "success",
-                    title: <p>Place has successfully edited!</p>,
-                    showConfirmButton: true,
-                    showDenyButton: false,
-                  }).then(() => {
+                  successAlertNotification(
+                    "Success",
+                    "Place has successfully edited!"
+                  ).then(() => {
                     router.push(`/places/${id}`);
                   });
                 } catch (error) {
@@ -194,79 +248,127 @@ export default function EditPlacePage(props) {
             >
               {(formik) => (
                 <FormikForm>
-                  <GetUserLocation
-                    setPosition={(position) => {
-                      formik.setFieldValue(
-                        "longitude",
-                        position.coords.longitude
-                      );
-                      formik.setFieldValue(
-                        "latitude",
-                        position.coords.latitude
-                      );
-                    }}
-                  />
                   <DebugFormik />
                   <div className="px-4">
                     <Row>
                       <Col md={{ size: 12 }}>
-                        <FormGroup>
-                          <label className="d-block">
-                            <input
-                              type="file"
-                              multiple
-                              hidden
-                              onChange={(e) => {
-                                if (
-                                  !e.target.files ||
-                                  e.target.files.length === 0
-                                ) {
-                                  return;
-                                }
-
-                                const files = e.target.files;
-
-                                if (files.length > 5) {
-                                  formik.setFieldError("files", "Maximum 5");
-                                  return;
-                                }
-                                formik.setFieldValue(
-                                  "files",
-                                  Array.from(files)
-                                );
-                                setPreviewImages(
-                                  Array.from(files).map((file) =>
-                                    URL.createObjectURL(file)
-                                  )
-                                );
+                        <div className="d-flex flex-wrap gap-1">
+                          {formik.values.files.map((file, index) => (
+                            <div
+                              className="position-relative"
+                              style={{
+                                width: 100,
+                                height: 100,
                               }}
-                            />
+                            >
+                              <img
+                                key={index}
+                                src={URL.createObjectURL(file)}
+                                className="d-block object-fit-cover border rounded w-100 h-100"
+                                alt=""
+                              />
 
-                            {previewImages.length > 0 ? (
-                              <>
-                                <LightboxImage images={previewImages} />
-                                <div className="d-grid">
-                                  <div className="btn btn-primary mt-2">
-                                    Change Image
-                                  </div>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="d-grid">
-                                <div className="btn btn-primary">
-                                  Select Image
-                                </div>
-                              </div>
-                            )}
-                          </label>
-                          <Input
-                            className="d-none"
-                            invalid={formik.errors.files}
-                          />
-                          <FormFeedback>{formik.errors.files}</FormFeedback>
-                        </FormGroup>
+                              <button
+                                className="btn btn-sm btn-danger position-absolute bottom-0 end-0"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  formik.setFieldValue(
+                                    "files",
+                                    formik.values.files.filter(
+                                      (item, i) => i !== index
+                                    )
+                                  );
+                                }}
+                              >
+                                <Trash2 size="1rem" />
+                              </button>
+                            </div>
+                          ))}
+
+                          {formik.values.files.length < 5 && (
+                            <div>
+                              <label
+                                htmlFor="files"
+                                className="d-block bg-light rounded border d-flex justify-content-center align-items-center"
+                                style={{
+                                  width: 100,
+                                  height: 100,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <PlusCircle size={30} />
+                              </label>
+                              <input
+                                type="file"
+                                multiple
+                                hidden
+                                id="files"
+                                onChange={(e) => {
+                                  if (
+                                    !e.target.files ||
+                                    e.target.files.length === 0
+                                  ) {
+                                    return;
+                                  }
+
+                                  const files = e.target.files;
+
+                                  if (
+                                    files.length >
+                                    5 - formik.values.files.length
+                                  ) {
+                                    formik.setFieldError("files", "Maximum 5");
+                                    return;
+                                  }
+
+                                  formik.setFieldValue("files", [
+                                    ...formik.values.files,
+                                    ...Array.from(files),
+                                  ]);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        <label
+                          className="d-block btn btn-primary mt-2"
+                          htmlFor="changeAllImage"
+                        >
+                          Change All Image
+                        </label>
+                        <input
+                          id="changeAllImage"
+                          type="file"
+                          multiple
+                          hidden
+                          onChange={(e) => {
+                            if (
+                              !e.target.files ||
+                              e.target.files.length === 0
+                            ) {
+                              return;
+                            }
+
+                            const files = e.target.files;
+
+                            if (files.length > 5) {
+                              formik.setFieldError("files", "Maximum 5");
+                              return;
+                            }
+
+                            formik.setFieldValue("files", Array.from(files));
+                          }}
+                        />
+
+                        {formik.errors.files && (
+                          <div className="text-danger">
+                            {formik.errors.files}
+                          </div>
+                        )}
                       </Col>
                     </Row>
+
                     <Row>
                       <FormGroup tag={Col} md={{ size: 12 }}>
                         <Label for="title">Place Name</Label>
@@ -443,6 +545,7 @@ export default function EditPlacePage(props) {
                                 className="btn-check"
                                 id={day}
                                 autocomplete="off"
+                                checked={!!formik.values.openingHour[index]}
                                 onChange={(e) => {
                                   if (e.target.checked) {
                                     formik.setFieldValue(

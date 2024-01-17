@@ -21,6 +21,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Spinner,
+  Form,
 } from "reactstrap";
 import moment from "moment";
 import { MoreVertical, Star, ThumbsDown, ThumbsUp } from "react-feather";
@@ -44,6 +45,7 @@ import Rating from "react-rating";
 import PlacesImageGrid from "@/components/PlacesImageGrid";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { successAlertNotification } from "@/components/alert/Alert";
 
 const ReviewDropdownAction = ({ review, session }) => {
   const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
@@ -380,7 +382,7 @@ export default function DetailPlacesPage(props) {
               })}
               onSubmit={async (values, actions) => {
                 const { files, ...rest } = values;
-
+                console.log(values, "CEK VALUES!");
                 const formData = new FormData();
                 files.forEach((file, index) => {
                   formData.append("files", file);
@@ -390,10 +392,7 @@ export default function DetailPlacesPage(props) {
                 try {
                   const response = await fetcher.post(
                     `/post/claim/${id}`,
-                    {
-                      formData,
-                      description: values.description,
-                    },
+                    formData,
                     {
                       headers: {
                         "Content-Type": "multipart/form-data",
@@ -402,13 +401,12 @@ export default function DetailPlacesPage(props) {
                     }
                   );
 
-                  MySwal.fire({
-                    icon: "success",
-                    title: <p>You has succesfully submit your request!</p>,
-                    showConfirmButton: true,
-                    showDenyButton: false,
-                  }).then(() => {
+                  successAlertNotification(
+                    "Success",
+                    "You has successfully submitted your request!"
+                  ).then(() => {
                     router.push(`/places/${id}`);
+                    toggleModalVerify();
                   });
                 } catch (error) {
                   console.error(error);
@@ -439,7 +437,31 @@ export default function DetailPlacesPage(props) {
                           type="file"
                           id="proof"
                           multiple
+                          onChange={(e) => {
+                            if (
+                              !e.target.files ||
+                              e.target.files.length === 0
+                            ) {
+                              return;
+                            }
+
+                            const files = e.target.files;
+
+                            if (files.length > 5) {
+                              formik.setFieldError("files", "Maximum 5");
+                              return;
+                            }
+                            formik.setFieldValue("files", Array.from(files));
+                            setPreviewImages(
+                              Array.from(files).map((file) =>
+                                URL.createObjectURL(file)
+                              )
+                            );
+                          }}
+                          onBlur={formik.handleBlur}
+                          invalid={formik.touched.files && formik.errors.files}
                         />
+                        <FormFeedback>{formik.errors.files}</FormFeedback>
                       </FormGroup>
                     </Row>
                     <Row>
@@ -451,7 +473,15 @@ export default function DetailPlacesPage(props) {
                           type="textarea"
                           id="description"
                           style={{ resize: "none", height: "100px" }}
+                          value={formik.values.description}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          invalid={
+                            formik.errors.description &&
+                            formik.touched.description
+                          }
                         />
+                        <FormFeedback>{formik.errors.description}</FormFeedback>
                       </FormGroup>
                     </Row>
                     <div className="d-flex">
@@ -489,6 +519,7 @@ export default function DetailPlacesPage(props) {
             profileName={data.user.username}
             createdDate={data.createdDate}
             creator={data.creator.username}
+            modifiedDate={data.modifiedDate}
           ></UserProfilePost>
         </div>
 

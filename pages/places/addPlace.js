@@ -189,14 +189,6 @@ export default function AddPlacePage(props) {
 
                   const id = response.data.data.id;
 
-                  // MySwal.fire({
-                  //   icon: "success",
-                  //   title: <p>Place has successfully added!</p>,
-                  //   showConfirmButton: true,
-                  //   showDenyButton: false,
-                  // }).then(() => {
-                  //   router.push(`/places/${id}`);
-                  // });
                   successAlertNotification(
                     "Success",
                     "Place has successfully added!"
