@@ -44,6 +44,31 @@ import Rating from "react-rating";
 import PlacesImageGrid from "@/components/PlacesImageGrid";
 import dynamic from "next/dynamic";
 
+const ReviewDropdownAction = ({ review }) => {
+  const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
+
+  const toggleDropdownReview = () => {
+    setIsDropdownReviewOpen(!isDropdownReviewOpen);
+  };
+
+  return (
+    <Dropdown
+      className=""
+      isOpen={isDropdownReviewOpen}
+      toggle={toggleDropdownReview}
+    >
+      <DropdownToggle caret={false} color="none" className="">
+        <MoreVertical />
+      </DropdownToggle>
+      <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
+        <DropdownItem>Report Review</DropdownItem>
+        <DropdownItem>Edit Review</DropdownItem>
+        <DropdownItem>Delete Review</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+};
+
 const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
   ssr: false,
 });
@@ -100,31 +125,6 @@ export default function DetailPlacesPage(props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const ReviewDropdownAction = ({ review }) => {
-    const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
-
-    const toggleDropdownReview = () => {
-      setIsDropdownReviewOpen(!isDropdownReviewOpen);
-    };
-
-    return (
-      <Dropdown
-        className=""
-        isOpen={isDropdownReviewOpen}
-        toggle={toggleDropdownReview}
-      >
-        <DropdownToggle caret={false} color="none" className="">
-          <MoreVertical />
-        </DropdownToggle>
-        <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
-          <DropdownItem>Report Review</DropdownItem>
-          <DropdownItem>Edit Review</DropdownItem>
-          <DropdownItem>Delete Review</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-    );
   };
 
   const [isModalReportOpen, setIsModalReportOpen] = useState(false);
@@ -498,6 +498,7 @@ export default function DetailPlacesPage(props) {
                 <MapWithNoSSR
                   position={[data.latitude, data.longitude]}
                   zoom={18}
+                  isDisabled
                 />
               </div>
               <p>

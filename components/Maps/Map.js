@@ -97,22 +97,24 @@ const Map = ({ position, zoom, onClickMap, isDisabled = false }) => {
         onClickMap={onClickMap}
         isDisabled={isDisabled}
       />
-      <GetCoordinates />
       {/* See more in https://github.com/smeijer/leaflet-geosearch */}
       {!isDisabled && (
-        <SearchField
-          provider={prov}
-          style="bar"
-          showMarker={false} // We set it to false, so basically this is just a search function
-          showPopup={false}
-          popupFormat={({ query, result }) => result.label}
-          maxMarkers={3}
-          retainZoomLevel={false}
-          animateZoom={true}
-          autoClose={false}
-          searchLabel={"Enter address, please"}
-          keepResult={true}
-        />
+        <>
+          <SearchField
+            provider={prov}
+            style="bar"
+            showMarker={false} // We set it to false, so basically this is just a search function
+            showPopup={false}
+            popupFormat={({ query, result }) => result.label}
+            maxMarkers={3}
+            retainZoomLevel={false}
+            animateZoom={true}
+            autoClose={false}
+            searchLabel={"Enter address, please"}
+            keepResult={true}
+          />
+          <GetCoordinates />
+        </>
       )}
     </MapContainer>
   );
