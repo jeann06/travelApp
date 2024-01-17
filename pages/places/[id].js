@@ -43,10 +43,11 @@ import withReactContent from "sweetalert2-react-content";
 import Rating from "react-rating";
 import PlacesImageGrid from "@/components/PlacesImageGrid";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const ReviewDropdownAction = ({ review, session }) => {
   const [isDropdownReviewOpen, setIsDropdownReviewOpen] = useState(false);
-
+  const router = useRouter();
   const toggleDropdownReview = () => {
     setIsDropdownReviewOpen(!isDropdownReviewOpen);
   };
@@ -65,7 +66,22 @@ const ReviewDropdownAction = ({ review, session }) => {
         {session?.user?.username === review.user.username && (
           <>
             <DropdownItem>Edit Review</DropdownItem>
-            <DropdownItem>Delete Review</DropdownItem>
+            <DropdownItem
+              onClick={async () => {
+                const response = await fetcher.delete(
+                  `/review/delete/${review.id}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${session.user.token}`,
+                    },
+                  }
+                );
+
+                router.reload();
+              }}
+            >
+              Delete Review
+            </DropdownItem>
           </>
         )}
       </DropdownMenu>
@@ -116,6 +132,7 @@ const BusinessHourList = ({ openingHour, closingHour }) => {
 export default function DetailPlacesPage(props) {
   const { id, data, data2 } = props;
   const router = useRouter();
+  console.log(data, "DATA!!!");
   const { data: session, status } = useSession();
   const items = data.postDetails.map((item, index) => {
     return {
@@ -123,7 +140,7 @@ export default function DetailPlacesPage(props) {
       alt: item.fileName,
     };
   });
-  console.log(items, "ITEMS!!!");
+
   const [previewImages, setPreviewImages] = useState([]);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -176,8 +193,25 @@ export default function DetailPlacesPage(props) {
               </DropdownItem>
               {session?.user?.username === data.user.username && (
                 <>
-                  <DropdownItem>Edit Place</DropdownItem>
-                  <DropdownItem>Delete Place</DropdownItem>
+                  <DropdownItem tag={Link} href={`/places/edit/${id}`}>
+                    Edit Place
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={async () => {
+                      const response = await fetcher.delete(
+                        `/post/delete/${id}`,
+                        {
+                          headers: {
+                            Authorization: `Bearer ${session.user.token}`,
+                          },
+                        }
+                      );
+
+                      router.push("/places");
+                    }}
+                  >
+                    Delete Place
+                  </DropdownItem>
                 </>
               )}
             </DropdownMenu>

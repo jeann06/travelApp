@@ -84,7 +84,7 @@ export default function EditPlacePage(props) {
   const [previewImages, setPreviewImages] = useState([]);
   const router = useRouter();
   const { data: session, status } = useSession();
-  console.log(session, "SESSIONNNNNNNNNN");
+  console.log(data, "DATA");
 
   return (
     <div style={{ backgroundColor: "#f0f0f0", flex: 1 }}>

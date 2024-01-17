@@ -22,6 +22,7 @@ import Lightbox from "yet-another-react-lightbox";
 import dynamic from "next/dynamic";
 import GetUserLocation from "@/components/GetUserLocation";
 import moment from "moment";
+import { successAlertNotification } from "@/components/alert/Alert";
 
 const MapWithNoSSR = dynamic(() => import("../../components/Maps/Map"), {
   ssr: false,
@@ -188,12 +189,18 @@ export default function AddPlacePage(props) {
 
                   const id = response.data.data.id;
 
-                  MySwal.fire({
-                    icon: "success",
-                    title: <p>Place has successfully added!</p>,
-                    showConfirmButton: true,
-                    showDenyButton: false,
-                  }).then(() => {
+                  // MySwal.fire({
+                  //   icon: "success",
+                  //   title: <p>Place has successfully added!</p>,
+                  //   showConfirmButton: true,
+                  //   showDenyButton: false,
+                  // }).then(() => {
+                  //   router.push(`/places/${id}`);
+                  // });
+                  successAlertNotification(
+                    "Success",
+                    "Place has successfully added!"
+                  ).then(() => {
                     router.push(`/places/${id}`);
                   });
                 } catch (error) {
