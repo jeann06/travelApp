@@ -69,10 +69,15 @@ export default function PlacesPage(props) {
     ) {
       return "Newest";
     } else if (
-      selectedFilter.sortBy === "createdDate" &&
+      selectedFilter.sortBy === "alphabet" &&
       selectedFilter.sortDir === "asc"
     ) {
-      return "Oldest";
+      return "A-Z";
+    } else if (
+      selectedFilter.sortBy === "alphabet" &&
+      selectedFilter.sortDir === "desc"
+    ) {
+      return "Z-A";
     }
   };
 
@@ -307,12 +312,22 @@ export default function PlacesPage(props) {
                     <DropdownItem
                       onClick={() =>
                         handleFilterSelect({
-                          sortBy: "createdDate",
+                          sortBy: "alphabet",
                           sortDir: "asc",
                         })
                       }
                     >
-                      Oldest
+                      A-Z
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() =>
+                        handleFilterSelect({
+                          sortBy: "alphabet",
+                          sortDir: "desc",
+                        })
+                      }
+                    >
+                      Z-A
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>

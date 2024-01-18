@@ -42,7 +42,7 @@ const UserCircle = ({ user }) => {
           </DropdownItem>
           <DropdownItem divider />
           <DropdownItem className="text-danger" onClick={() => signOut()}>
-            <LogOut />
+            <LogOut style={{ width: "18px" }} className="me-1" />
             Logout
           </DropdownItem>
         </div>

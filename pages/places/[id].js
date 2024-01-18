@@ -250,6 +250,7 @@ export default function DetailPlacesPage(props) {
                     showDenyButton: false,
                   }).then(() => {
                     router.push(`/places/${id}`);
+                    toggleModalReport();
                   });
                 } catch (error) {
                   console.error(error);
