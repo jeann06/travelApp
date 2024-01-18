@@ -21,7 +21,6 @@ const App = ({ Component, pageProps: { session, ...pageProps } }) => {
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
         {getLayout(<Component {...pageProps} />)}
-        <ReactQueryDevtools />
       </SessionProvider>
     </QueryClientProvider>
   );
