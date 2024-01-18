@@ -22,9 +22,11 @@ import { useSession } from "next-auth/react";
 import { useMutation, useQuery } from "react-query";
 import fetcher from "@/utils/fetcher";
 import moment from "moment";
+import { useRouter } from "next/router";
 
 const NotificationButton = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
   const toggle = () => setDropdownOpen((prev) => !prev);
 
   const { data: session, status } = useSession();
@@ -99,8 +101,18 @@ const NotificationButton = () => {
                 className={`rounded-2 p-3 ${
                   notification.read ? "" : "bg-danger-subtle"
                 }`}
-                tag={Link}
-                href={`/places/${notification.postId}`}
+                onClick={async () => {
+                  const response = await fetcher.get(
+                    `/notification/read/${notification.id}`,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${session.user.token}`,
+                      },
+                    }
+                  );
+                  query.refetch();
+                  router.push(`/places/${notification.postId}`);
+                }}
               >
                 <div
                   className="d-flex gap-2 align-items-center"
