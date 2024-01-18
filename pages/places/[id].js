@@ -173,6 +173,41 @@ export default function DetailPlacesPage(props) {
     },
   ];
 
+  const [filterOpen, setFilterOpen] = useState(false);
+  const toggleFilter = () => {
+    setFilterOpen(!filterOpen);
+  };
+  const [selectedFilter, setSelectedFilter] = useState({
+    sortBy: "createdDate",
+    sortDir: "desc",
+  });
+  const handleFilterSelect = (filter, extraQuery = {}) => {
+    setSelectedFilter(filter);
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        page: 0,
+        sortBy: filter.sortBy,
+        sortDir: filter.sortDir,
+        ...extraQuery,
+      },
+    });
+  };
+  const getFilterLabel = (selectedFilter) => {
+    if (
+      selectedFilter.sortBy === "likes" &&
+      selectedFilter.sortDir === "desc"
+    ) {
+      return "Most-Liked";
+    } else if (
+      selectedFilter.sortBy === "createdDate" &&
+      selectedFilter.sortDir === "desc"
+    ) {
+      return "Newest";
+    }
+  };
+
   return (
     <div>
       <Container className="mb-5">
@@ -538,6 +573,10 @@ export default function DetailPlacesPage(props) {
           <Card className="" style={{ width: "600px" }}>
             <CardBody>
               <p>
+                <span className="fw-semibold">Alias: </span>
+                {data.alias}
+              </p>
+              <p>
                 <span className="fw-semibold">Category: </span>
                 {data.category.category}
               </p>
@@ -589,6 +628,7 @@ export default function DetailPlacesPage(props) {
         </div>
 
         <h2 className="mt-4">Review</h2>
+
         {status === "authenticated" ? (
           <Formik
             initialValues={{
@@ -772,6 +812,44 @@ export default function DetailPlacesPage(props) {
             Please sign in before writing a review
           </Button>
         )}
+        <div className="d-flex">
+          <Dropdown
+            className="mt-4 mb-3"
+            isOpen={filterOpen}
+            toggle={toggleFilter}
+          >
+            <DropdownToggle
+              caret
+              color="light"
+              className="border text-start align-caret-right"
+              style={{ minWidth: "150px" }}
+            >
+              {getFilterLabel(selectedFilter)}
+            </DropdownToggle>
+            <DropdownMenu className="mt-1" style={{ minWidth: "150px" }}>
+              <DropdownItem
+                onClick={() =>
+                  handleFilterSelect({
+                    sortBy: "likes",
+                    sortDir: "desc",
+                  })
+                }
+              >
+                Most-Liked
+              </DropdownItem>
+              <DropdownItem
+                onClick={() =>
+                  handleFilterSelect({
+                    sortBy: "createdDate",
+                    sortDir: "desc",
+                  })
+                }
+              >
+                Newest
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
 
         {data2.content.map((item, index) => {
           return (
@@ -883,11 +961,15 @@ export default function DetailPlacesPage(props) {
 
 export async function getServerSideProps(ctx) {
   const { params } = ctx;
-
+  const query = ctx.query;
+  const page = query.page ?? 0;
+  const size = query.size ?? 10;
+  const sortBy = query.sortBy ?? "createdDate";
+  const sortDir = query.sortDir ?? "desc";
   const id = params.id;
   const response = await fetcher.get(`/post/get/${id}`);
   const responseReview = await fetcher.get(
-    `/review/get/${id}?sortBy=createdDate&sortDir=desc&page=0&size=5`
+    `/review/get/${id}?sortBy=${sortBy}&sortDir=${sortDir}&page=${page}&size=${size}`
   );
   const data = response.data.data;
   const data2 = responseReview.data.data;

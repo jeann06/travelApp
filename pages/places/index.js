@@ -41,7 +41,6 @@ export default function PlacesPage(props) {
       },
     });
   };
-
   const getFilterLabel = (selectedFilter) => {
     if (
       selectedFilter.sortBy === "trending" &&
@@ -78,6 +77,37 @@ export default function PlacesPage(props) {
       selectedFilter.sortDir === "desc"
     ) {
       return "Z-A";
+    }
+  };
+
+  const [selectedReviewFilter, setSelectedReviewFilter] = useState({
+    sortBy: "likes",
+    sortDir: "desc",
+  });
+  const handleFilterReviewSelect = (filter, extraQuery = {}) => {
+    setSelectedReviewFilter(filter);
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        page: 0,
+        sortBy: filter.sortBy,
+        sortDir: filter.sortDir,
+        ...extraQuery,
+      },
+    });
+  };
+  const getFilterReviewLabel = (selectedReviewFilter) => {
+    if (
+      selectedReviewFilter.sortBy === "likes" &&
+      selectedReviewFilter.sortDir === "desc"
+    ) {
+      return "Likes";
+    } else if (
+      selectedReviewFilter.sortBy === "createdDate" &&
+      selectedReviewFilter.sortDir === "desc"
+    ) {
+      return "Newest";
     }
   };
 

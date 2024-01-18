@@ -97,6 +97,7 @@ export default function AddPlacePage(props) {
               initialValues={{
                 files: [],
                 title: "",
+                alias: "",
                 description: "",
                 city: "",
                 category: null,
@@ -107,10 +108,12 @@ export default function AddPlacePage(props) {
                 closingHour: [null, null, null, null, null, null, null],
                 latitude: 0,
                 longitude: 0,
+                // socialsLink: "",
               }}
               validationSchema={yup.object().shape({
                 files: yup.array().required("Images is required"),
                 title: yup.string().required("Place Name is required"),
+                alias: yup.string().optional(),
                 description: yup.string().required("Description is required"),
                 city: yup.string().required("City is required"),
                 category: yup
@@ -121,8 +124,9 @@ export default function AddPlacePage(props) {
                   .required("Category is required"),
                 address: yup.string().required("Address is required"),
                 parking: yup.string().optional(),
-                // openingHour: yup.string().required("Opening Hour is required"),
-                // closingHour: yup.string().required("Closing Hour is required"),
+                // socialsLink: yup.string().optional(),
+                // openingHour: yup.array().required("Opening Hour is required"),
+                // closingHour: yup.array().required("Closing Hour is required"),
               })}
               onSubmit={async (values, actions) => {
                 const { files, ...rest } = values;
@@ -297,6 +301,22 @@ export default function AddPlacePage(props) {
                       </FormGroup>
                     </Row>
 
+                    <Row>
+                      <FormGroup tag={Col} md={{ size: 12 }}>
+                        <Label for="alias">Alias</Label>
+                        <Input
+                          id="alias"
+                          name="alias"
+                          placeholder="Alias"
+                          type="text"
+                          value={formik.values.alias}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          invalid={formik.errors.alias && formik.touched.alias}
+                        />
+                        <FormFeedback>{formik.errors.alias}</FormFeedback>
+                      </FormGroup>
+                    </Row>
                     <Row>
                       <FormGroup tag={Col} md={{ size: 12 }}>
                         <Label for="description">Description</Label>
@@ -619,6 +639,28 @@ export default function AddPlacePage(props) {
                         <FormFeedback>{formik.errors.phoneNumber}</FormFeedback>
                       </FormGroup>
                     </Row>
+
+                    {/* <Row>
+                      <FormGroup tag={Col} md={{ size: 12 }} className="">
+                        <Label for="socialsLink">Socials Link</Label>
+                        <Input
+                          id="socialsLink"
+                          name="socialsLink"
+                          placeholder="Socials Link"
+                          type="text"
+                          style={{ resize: "none" }}
+                          value={formik.values.socialsLink}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          invalid={
+                            formik.errors.socialsLink &&
+                            formik.touched.socialsLink
+                          }
+                        />
+                        <FormFeedback>{formik.errors.socialsLink}</FormFeedback>
+                      </FormGroup>
+                    </Row> */}
+
                     <div className="mt-2">
                       <Button
                         block

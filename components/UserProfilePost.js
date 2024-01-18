@@ -23,10 +23,12 @@ const UserProfile = ({
         />
       </div>
       <div className="ms-3">
-        <div className="fw-semibold">{profileName}</div>
-        <div>
-          Posted by {creator} on {moment(createdDate).format("DD MMMM YYYY")} -
-          Modified by {profileName} on{" "}
+        <div className="fw-semibold" style={{ fontSize: "20px" }}>
+          {profileName}
+        </div>
+        <div style={{ fontSize: "13px" }}>
+          Posted by {creator} on {moment(createdDate).format("DD MMMM YYYY")}{" "}
+          &middot; Modified by {profileName} on{" "}
           {moment(modifiedDate).format("DD MMMM YYYY")}
         </div>
       </div>
