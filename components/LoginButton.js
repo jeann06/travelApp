@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
+import { LogOut } from "react-feather";
 import {
   Button,
   Dropdown,
@@ -37,10 +38,13 @@ const UserCircle = ({ user }) => {
       <DropdownMenu className="mt-1 rounded-3 mx-0 shadow" end>
         <div className="d-grid gap-1">
           <DropdownItem header className="mb-0">
-            {user.email}
+            {user.username}
           </DropdownItem>
           <DropdownItem divider />
-          <DropdownItem onClick={() => signOut()}>Logout</DropdownItem>
+          <DropdownItem className="text-danger" onClick={() => signOut()}>
+            <LogOut />
+            Logout
+          </DropdownItem>
         </div>
       </DropdownMenu>
     </Dropdown>
