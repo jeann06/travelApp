@@ -17,38 +17,38 @@ export default function NotificationPage(props) {
     <div>
       <Container className="align-items-center justify-content-center mt-3">
         <h1>Profile</h1>
-        <div className="d-flex">
-          <div className="card p-4 mx-auto" style={{ width: "500px" }}>
-            <img
-              src={`http://localhost:8080/${data.profileUrl}`}
-              alt=""
-              width="100"
-              height="100"
-              className="mx-auto rounded-circle"
-            />
-            <span
-              className="mx-auto fw-semibold mt-3"
-              style={{ fontSize: "20px" }}
-            >
-              {data.fullName}
-            </span>
-            <span className="mx-auto">@{data.username}</span>
-            <span className="mt-2 mx-auto" style={{ fontSize: "15px" }}>
-              Born {moment(data.dob).format("DD MMMM YYYY")}
-            </span>
-            <span className="mx-auto" style={{ fontSize: "15px" }}>
-              Joined {moment(data.createdDate).format("DD MMMM YYYY")}
-            </span>
 
-            <Button
-              className="m-auto mt-3 fw-semibold rounded-pill border"
-              color="none"
-              style={{ width: "130px", height: "40px" }}
-              onClick={() => router.push(`/`)}
-            >
-              Edit Profile
-            </Button>
-          </div>
+        <div className="card p-4" style={{ width: "300px" }}>
+          <img
+            src={`http://localhost:8080/${data.profileUrl}`}
+            alt=""
+            width="100"
+            height="100"
+            className="mx-auto rounded-circle"
+          />
+          <span
+            className="mx-auto fw-semibold mt-3"
+            style={{ fontSize: "20px" }}
+          >
+            {data.fullName}
+          </span>
+          <span className="mx-auto">@{data.username}</span>
+          <span className="mt-2 mx-auto" style={{ fontSize: "15px" }}>
+            Born {moment(data.dob).format("DD MMMM YYYY")}
+          </span>
+          <span className="mx-auto" style={{ fontSize: "15px" }}>
+            Joined {moment(data.createdDate).format("DD MMMM YYYY")}
+          </span>
+
+          <Button
+            className="m-auto mt-3 fw-semibold rounded-pill border"
+            color="none"
+            style={{ width: "130px", height: "40px" }}
+            onClick={() => router.push(`/`)}
+            hover={{ backgroundColor: "#000000" }}
+          >
+            Edit Profile
+          </Button>
         </div>
       </Container>
     </div>
