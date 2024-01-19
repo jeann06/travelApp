@@ -8,11 +8,12 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { useRouter } from "next/router";
 
 const UserCircle = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen((prev) => !prev);
-
+  const router = useRouter();
   return (
     <Dropdown
       className="text-end ms-auto"
@@ -37,12 +38,19 @@ const UserCircle = ({ user }) => {
       </DropdownToggle>
       <DropdownMenu className="mt-1 rounded-3 mx-0 shadow" end>
         <div className="d-grid gap-1">
-          <DropdownItem header className="mb-0">
-            {user.username}
+          <DropdownItem header className="mb-0" style={{ fontSize: "16px" }}>
+            @{user.username}
+          </DropdownItem>
+          <DropdownItem onClick={() => router.push(`/profile`)}>
+            Profile
           </DropdownItem>
           <DropdownItem divider />
-          <DropdownItem className="text-danger" onClick={() => signOut()}>
-            <LogOut style={{ width: "18px" }} className="me-1" />
+          <DropdownItem
+            className="text-danger"
+            onClick={() => signOut()}
+            style={{ fontSize: "14px" }}
+          >
+            <LogOut style={{ width: "15px" }} className="me-1" />
             Logout
           </DropdownItem>
         </div>

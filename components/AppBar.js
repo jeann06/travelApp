@@ -130,7 +130,12 @@ const NotificationButton = () => {
             ))}
           </div>
           <div className="d-flex justify-content-between align-items-center py-2">
-            <button className="btn btn-sm btn-primary">See More</button>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => router.push(`/notification/`)}
+            >
+              See More
+            </button>
             <button
               className="btn btn-sm btn-danger"
               onClick={() => readAll.mutate()}

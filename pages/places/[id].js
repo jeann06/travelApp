@@ -605,7 +605,6 @@ export default function DetailPlacesPage(props) {
                 className="mb-3"
                 style={{
                   height: 200,
-                  pointerEvents: "none",
                 }}
               >
                 <MapWithNoSSR
