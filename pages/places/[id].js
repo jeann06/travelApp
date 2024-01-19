@@ -573,10 +573,6 @@ export default function DetailPlacesPage(props) {
           <Card className="" style={{ width: "600px" }}>
             <CardBody>
               <p>
-                <span className="fw-semibold">Alias: </span>
-                {data.alias}
-              </p>
-              <p>
                 <span className="fw-semibold">Category: </span>
                 {data.category.category}
               </p>
