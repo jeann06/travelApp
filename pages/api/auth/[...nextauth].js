@@ -1,3 +1,4 @@
+import fetcher from "@/utils/fetcher";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -14,17 +15,11 @@ export default NextAuth({
         },
       },
       async authorize(credentials, req) {
-        const res = await fetch("http://localhost:8080/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: credentials?.username,
-            password: credentials?.password,
-          }),
+        const res = await fetcher.post("/auth/login", {
+          username: credentials?.username,
+          password: credentials?.password,
         });
-        const data = await res.json();
+        const data = res.data;
         if (data.responseSchema.status == "Error") {
           return null;
         } else {

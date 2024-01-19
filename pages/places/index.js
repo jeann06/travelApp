@@ -376,7 +376,7 @@ export default function PlacesPage(props) {
                   >
                     <div className="card">
                       <img
-                        src={`http://localhost:8080/${item.fileUrl}`}
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/${item.fileUrl}`}
                         class="card-img-top object-fit-cover"
                         width={150}
                         height={180}

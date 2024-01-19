@@ -20,7 +20,7 @@ export default function NotificationPage(props) {
 
         <div className="card p-4" style={{ width: "300px" }}>
           <img
-            src={`http://localhost:8080/${data.profileUrl}`}
+            src={`${process.env.NEXT_PUBLIC_API_URL}/${data.profileUrl}`}
             alt=""
             width="100"
             height="100"

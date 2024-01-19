@@ -138,7 +138,7 @@ export default function DetailPlacesPage(props) {
   const { data: session, status } = useSession();
   const items = data.postDetails.map((item, index) => {
     return {
-      src: `http://localhost:8080/uploads/post-details/${item.fileName}`,
+      src: `${process.env.NEXT_PUBLIC_API_URL}/uploads/post-details/${item.fileName}`,
       alt: item.fileName,
     };
   });
@@ -887,7 +887,7 @@ export default function DetailPlacesPage(props) {
                 {item.reviewDetails.map((item2, index2) => {
                   return (
                     <img
-                      src={`http://localhost:8080/uploads/review-details/${item2.fileName}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/review-details/${item2.fileName}`}
                       width={150}
                       height={150}
                       className="object-fit-cover me-2 rounded"

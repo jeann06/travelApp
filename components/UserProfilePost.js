@@ -16,7 +16,7 @@ const UserProfile = ({
         }}
       >
         <img
-          src={`http://localhost:8080/${profilePic}`}
+          src={`${process.env.NEXT_PUBLIC_API_URL}/${profilePic}`}
           className="object-fit-cover rounded-circle border border-secondary border-1"
           width="55px"
           height="55px"

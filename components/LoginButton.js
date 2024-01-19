@@ -29,7 +29,7 @@ const UserCircle = ({ user }) => {
         }}
       >
         <img
-          src={`http://localhost:8080/${user.profileUrl}`}
+          src={`${process.env.NEXT_PUBLIC_API_URL}/${user.profileUrl}`}
           alt=""
           width="32"
           height="32"
