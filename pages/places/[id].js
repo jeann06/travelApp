@@ -848,7 +848,7 @@ export default function DetailPlacesPage(props) {
 
         {data2.content.map((item, index) => {
           return (
-            <div key={index} className="border p-3">
+            <div key={index} className="border p-3 mb-3">
               <div className="d-flex justify-content-between">
                 <UserProfile
                   profilePic={item.user.profileUrl}

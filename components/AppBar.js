@@ -157,19 +157,21 @@ function Example(args) {
   return (
     <div>
       <Navbar expand>
-        <NavbarBrand href="/">TravelApp</NavbarBrand>
+        <NavbarBrand href="/" className="ms-3">
+          Travelink
+        </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
-          <Nav className="me-auto " navbar>
-            <NavItem>
+          <Nav className="m-auto" navbar>
+            <NavItem className="mx-3">
               <NavLink tag={Link} href="/">
                 Home
               </NavLink>
             </NavItem>
-            <NavItem>
+            <NavItem className="mx-3">
               <NavLink href={`/places/`}>Places to Visit</NavLink>
             </NavItem>
-            <NavItem>
+            <NavItem className="mx-3">
               <NavLink href="/">About Us</NavLink>
             </NavItem>
           </Nav>

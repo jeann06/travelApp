@@ -16,7 +16,7 @@ export default function NotificationPage(props) {
   return (
     <div>
       <Container className="align-items-center justify-content-center mt-3">
-        <h1>Profile</h1>
+        <h1 className="mb-3">Profile</h1>
 
         <div className="card p-4" style={{ width: "300px" }}>
           <img
