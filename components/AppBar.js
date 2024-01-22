@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import LoginButton from "./LoginButton";
 import {
   Collapse,
@@ -92,41 +92,49 @@ const NotificationButton = () => {
             maxHeight: "450px",
             overflow: "scroll",
             overflowX: "hidden",
+            minWidth: "200px",
           }}
         >
           <div className="d-grid gap-1">
-            {query.data.data.content.map((notification) => (
-              <DropdownItem
-                key={notification.id}
-                className={`rounded-2 p-3 ${
-                  notification.read ? "" : "bg-danger-subtle"
-                }`}
-                onClick={async () => {
-                  const response = await fetcher.get(
-                    `/notification/read/${notification.id}`,
-                    {
-                      headers: {
-                        Authorization: `Bearer ${session.user.token}`,
-                      },
-                    }
-                  );
-                  query.refetch();
-                  router.push(`/places/${notification.postId}`);
-                }}
-              >
-                <div
-                  className="d-flex gap-2 align-items-center"
-                  style={{ fontSize: 14 }}
-                >
-                  <span className="badge badge-sm bg-primary">
-                    {notification.category}
-                  </span>
-                  &middot;
-                  <span>{moment(notification.createdDate).fromNow()}</span>
-                </div>
-                <strong>{notification.title}</strong>
-                <div>{notification.message}</div>
+            {query.data.data.content.length === 0 && (
+              <DropdownItem header className="mb-0">
+                No Notifications
               </DropdownItem>
+            )}
+            {query.data.data.content.map((notification) => (
+              <Fragment key={notification.id}>
+                <DropdownItem
+                  key={notification.id}
+                  className={`rounded-2 p-3 ${
+                    notification.read ? "" : "bg-danger-subtle"
+                  }`}
+                  onClick={async () => {
+                    const response = await fetcher.get(
+                      `/notification/read/${notification.id}`,
+                      {
+                        headers: {
+                          Authorization: `Bearer ${session.user.token}`,
+                        },
+                      }
+                    );
+                    query.refetch();
+                    router.push(`/places/${notification.postId}`);
+                  }}
+                >
+                  <div
+                    className="d-flex gap-2 align-items-center"
+                    style={{ fontSize: 14 }}
+                  >
+                    <span className="badge badge-sm bg-primary">
+                      {notification.category}
+                    </span>
+                    &middot;
+                    <span>{moment(notification.createdDate).fromNow()}</span>
+                  </div>
+                  <strong>{notification.title}</strong>
+                  <div>{notification.message}</div>
+                </DropdownItem>
+              </Fragment>
             ))}
           </div>
           <div className="d-flex justify-content-between align-items-center py-2">
@@ -157,7 +165,7 @@ function Example(args) {
   return (
     <div>
       <Navbar expand>
-        <NavbarBrand href="/" className="ms-3">
+        <NavbarBrand href="/" className="ms-3 custom-font">
           Travelink
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
@@ -171,9 +179,9 @@ function Example(args) {
             <NavItem className="mx-3">
               <NavLink href={`/places/`}>Places to Visit</NavLink>
             </NavItem>
-            <NavItem className="mx-3">
+            {/* <NavItem className="mx-3">
               <NavLink href="/">About Us</NavLink>
-            </NavItem>
+            </NavItem> */}
           </Nav>
           <NotificationButton />
           <LoginButton />

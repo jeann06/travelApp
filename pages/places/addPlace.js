@@ -505,7 +505,7 @@ export default function AddPlacePage(props) {
                                         .set("hours", 10)
                                         .set("minutes", 0)
                                         .set("seconds", 0)
-                                        .add(7, "hours") // ditambah 7 jam
+                                        .add(11, "hours") // ditambah 7 jam
                                         .toDate()
                                     );
                                   } else {

@@ -51,7 +51,7 @@ const LoginForm = () => {
             <input
               type="text"
               className="form-control"
-              autoComplete="username"
+              autoComplete="none"
               id="username"
               placeholder="Username"
               onChange={handleChange}

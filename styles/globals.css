@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Carter+One&display=swap");
+
 .form-signin {
   max-width: 330px;
   padding: 1rem;
@@ -18,4 +20,8 @@
 
 .align-caret-right::after {
   margin-left: 60px;
+}
+
+.custom-font {
+  font-family: "Carter One", system-ui;
 }
