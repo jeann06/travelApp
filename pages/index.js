@@ -119,7 +119,7 @@ export default function HomePage(props) {
                 <div className="card">
                   <img
                     src={`${process.env.NEXT_PUBLIC_API_URL}/${item.fileUrl}`}
-                    class="card-img-top object-fit-cover"
+                    className="card-img-top object-fit-cover"
                     width={150}
                     height={180}
                     alt=""
@@ -178,7 +178,7 @@ export default function HomePage(props) {
                 <div className="card" style={{ height: "100%" }}>
                   <img
                     src={`${process.env.NEXT_PUBLIC_API_URL}/${item.fileUrl}`}
-                    class="card-img-top object-fit-cover"
+                    className="card-img-top object-fit-cover"
                     width={150}
                     height={180}
                     alt=""

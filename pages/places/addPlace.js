@@ -533,7 +533,7 @@ export default function AddPlacePage(props) {
                         <div className="card ">
                           <div className="card-body p-0">
                             <table className="table align-middle table-borderless rounded overflow-hidden">
-                              <thead class="table-light">
+                              <thead className="table-light">
                                 <tr className="border-bottom">
                                   <th scope="col">Day</th>
                                   <th scope="col">Start Time</th>
