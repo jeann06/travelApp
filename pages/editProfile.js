@@ -13,13 +13,41 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function EditProfilePage(props) {
   const { data } = props;
-  const [previewImages, setPreviewImages] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
   const router = useRouter();
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    let isFetching = false;
+
+    async function fetchImagesFromServer() {
+      const destinationPath = `/${data.profileUrl}`;
+      const blobResponse = await fetcher.get(destinationPath, {
+        responseType: "blob",
+      });
+      const blob = blobResponse.data;
+
+      const file = new File([blob], data.username, { type: blob.type });
+
+      if (!isFetching) {
+        setPreviewImage(file);
+      }
+    }
+
+    if (previewImage) {
+      return;
+    }
+
+    fetchImagesFromServer();
+
+    return () => {
+      isFetching = true;
+    };
+  }, []);
 
   return (
     <div style={{ backgroundColor: "#f0f0f0", flex: 1 }}>
@@ -28,8 +56,9 @@ export default function EditProfilePage(props) {
           <div className="card-body py-4">
             <h4 className="text-center mb-4">Suggest New Place</h4>
             <Formik
+              enableReinitialize
               initialValues={{
-                files: [],
+                file: previewImage || null,
                 username: data.username,
                 fullName: data.fullName,
                 email: data.email,
@@ -37,62 +66,34 @@ export default function EditProfilePage(props) {
                 dob: data.dob || new Date(),
               }}
               validationSchema={yup.object().shape({
-                files: yup.array().required("Images is required"),
-                fullName: yup.string().required("Place Name is required"),
-                email: yup.string().required("Email is required"),
-                phone: yup.string().required("Phone Number is required"),
-                dob: yup.string().required("DOB is required"),
+                file: yup.mixed().optional(),
+                fullName: yup.string().optional(),
+                email: yup.string().optional(),
+                phone: yup.string().optional(),
+                dob: yup.string().optional(),
               })}
               onSubmit={async (values, actions) => {
-                const { files, ...rest } = values;
+                const { file, ...rest } = values;
 
                 const formData = new FormData();
-                files.forEach((file, index) => {
-                  formData.append("files", file);
-                });
-
+                formData.append("file", file);
                 formData.append("data");
 
                 try {
-                  const response = await fetcher.post(
-                    "/post/create",
-                    formData,
-                    {
-                      headers: {
-                        "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer ${session.user.token}`,
-                      },
-                    }
-                  );
+                  const response = await fetcher.post("/user/edit", formData, {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      Authorization: `Bearer ${session.user.token}`,
+                    },
+                  });
 
                   if (response.data.responseSchema.status === "Error") {
-                    if (
-                      typeof response.data.responseSchema.message === "string"
-                    ) {
-                      if (
-                        response.data.responseSchema.message ===
-                        "Duplicate Title"
-                      ) {
-                        actions.setFieldError(
-                          "title",
-                          response.data.responseSchema.message
-                        );
-                      }
-
-                      return MySwal.fire({
-                        icon: "error",
-                        title: <p>{response.data.responseSchema.message}</p>,
-                        showConfirmButton: true,
-                        showDenyButton: false,
-                      });
-                    } else {
-                      return MySwal.fire({
-                        icon: "error",
-                        title: <p>BE Error - But not of string type</p>,
-                        showConfirmButton: true,
-                        showDenyButton: false,
-                      });
-                    }
+                    return MySwal.fire({
+                      icon: "error",
+                      title: <p>{response.data.responseSchema.message}</p>,
+                      showConfirmButton: true,
+                      showDenyButton: false,
+                    });
                   }
 
                   const id = response.data.data.id;
@@ -101,7 +102,7 @@ export default function EditProfilePage(props) {
                     "Success",
                     "Place has successfully added!"
                   ).then(() => {
-                    router.push(`/user/edit`);
+                    router.reload(`/user/edit`);
                   });
                 } catch (error) {
                   MySwal.fire({
@@ -115,64 +116,57 @@ export default function EditProfilePage(props) {
             >
               {(formik) => (
                 <FormikForm>
-                  {/* <DebugFormik /> */}
+                  <DebugFormik />
                   <div className="px-4">
                     <Row>
                       <Col md={{ size: 12 }}>
                         <FormGroup>
-                          <label className="d-block">
-                            <input
-                              type="file"
-                              multiple
-                              hidden
-                              onChange={(e) => {
-                                if (
-                                  !e.target.files ||
-                                  e.target.files.length === 0
-                                ) {
-                                  return;
-                                }
-
-                                const files = e.target.files;
-
-                                if (files.length > 5) {
-                                  formik.setFieldError("files", "Maximum 5");
-                                  return;
-                                }
-                                formik.setFieldValue(
-                                  "files",
-                                  Array.from(files)
-                                );
-                                setPreviewImages(
-                                  Array.from(files).map((file) =>
-                                    URL.createObjectURL(file)
-                                  )
-                                );
+                          {formik.values.file && (
+                            <div
+                              className="position-relative"
+                              style={{
+                                width: 100,
+                                height: 100,
                               }}
-                            />
+                            >
+                              <img
+                                src={URL.createObjectURL(formik.values.file)}
+                                className="d-block object-fit-cover border rounded w-100 h-100"
+                                alt=""
+                              />
+                            </div>
+                          )}
 
-                            {previewImages.length > 0 ? (
-                              <>
-                                <LightboxImage images={previewImages} />
-                                <div className="d-grid">
-                                  <div className="btn btn-primary mt-2">
-                                    Change Image
-                                  </div>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="d-grid">
-                                <div className="btn btn-primary">
-                                  Select Image
-                                </div>
-                              </div>
-                            )}
+                          <label
+                            className="d-block btn btn-primary mt-2"
+                            htmlFor="changeImage"
+                          >
+                            Change image
                           </label>
-                          <Input
-                            className="d-none"
-                            invalid={formik.errors.files}
+                          <input
+                            id="changeImage"
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onBlur={formik.handleBlur}
+                            onChange={(e) => {
+                              if (
+                                !e.target.files &&
+                                e.target.files.length === 0
+                              ) {
+                                return;
+                              }
+
+                              const file = e.target.files[0];
+                              formik.setFieldValue("file", file);
+                            }}
                           />
-                          <FormFeedback>{formik.errors.files}</FormFeedback>
+
+                          {formik.touched.file && formik.errors.file && (
+                            <div className="text-danger">
+                              {formik.errors.file}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     </Row>
