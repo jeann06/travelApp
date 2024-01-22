@@ -1,9 +1,9 @@
 import { DebugFormik } from "@/components/DebugFormik";
 import fetcher from "@/utils/fetcher";
-import { Formik, Form as FormikForm } from "formik";
+import { Formik, Form as FormikForm, useFormikContext } from "formik";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import * as yup from "yup";
+import { useEffect } from "react";
 import {
   Button,
   Col,
@@ -13,33 +13,29 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import * as yup from "yup";
+import { successAlertNotification } from "@/components/alert/Alert";
 
-export default function EditProfilePage(props) {
-  const { data } = props;
-  const [previewImage, setPreviewImage] = useState(null);
-  const router = useRouter();
-  const { data: session, status } = useSession();
+const MySwal = withReactContent(Swal);
 
+const SetInitialProfileImage = ({ destinationPath, username }) => {
+  const { setFieldValue } = useFormikContext();
   useEffect(() => {
     let isFetching = false;
 
     async function fetchImagesFromServer() {
-      const destinationPath = `/${data.profileUrl}`;
       const blobResponse = await fetcher.get(destinationPath, {
         responseType: "blob",
       });
       const blob = blobResponse.data;
 
-      const file = new File([blob], data.username, { type: blob.type });
+      const file = new File([blob], username, { type: blob.type });
 
       if (!isFetching) {
-        setPreviewImage(file);
+        setFieldValue("file", file);
       }
-    }
-
-    if (previewImage) {
-      return;
     }
 
     fetchImagesFromServer();
@@ -47,7 +43,15 @@ export default function EditProfilePage(props) {
     return () => {
       isFetching = true;
     };
-  }, []);
+  }, [destinationPath]);
+
+  return null;
+};
+
+export default function EditProfilePage(props) {
+  const { data } = props;
+  const router = useRouter();
+  const { data: session, status } = useSession();
 
   return (
     <div style={{ backgroundColor: "#f0f0f0", flex: 1 }}>
@@ -56,9 +60,8 @@ export default function EditProfilePage(props) {
           <div className="card-body py-4">
             <h4 className="text-center mb-4">Suggest New Place</h4>
             <Formik
-              enableReinitialize
               initialValues={{
-                file: previewImage || null,
+                file: null,
                 username: data.username,
                 fullName: data.fullName,
                 email: data.email,
@@ -77,7 +80,7 @@ export default function EditProfilePage(props) {
 
                 const formData = new FormData();
                 formData.append("file", file);
-                formData.append("data");
+                formData.append("data", JSON.stringify(rest));
 
                 try {
                   const response = await fetcher.post("/user/edit", formData, {
@@ -96,11 +99,9 @@ export default function EditProfilePage(props) {
                     });
                   }
 
-                  const id = response.data.data.id;
-
                   successAlertNotification(
                     "Success",
-                    "Place has successfully added!"
+                    "Profile has successfully edited!"
                   ).then(() => {
                     router.reload(`/user/edit`);
                   });
@@ -117,6 +118,10 @@ export default function EditProfilePage(props) {
               {(formik) => (
                 <FormikForm>
                   <DebugFormik />
+                  <SetInitialProfileImage
+                    destinationPath={`/${data.profileUrl}`}
+                    username={data.username}
+                  />
                   <div className="px-4">
                     <Row>
                       <Col md={{ size: 12 }}>
@@ -253,7 +258,7 @@ export default function EditProfilePage(props) {
                         color="primary"
                         disabled={formik.isSubmitting}
                       >
-                        {formik.isSubmitting ? "Submitting..." : "Submit"}
+                        {formik.isSubmitting ? "Saving..." : "Save"}
                       </Button>
                     </div>
                   </div>
