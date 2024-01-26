@@ -439,7 +439,7 @@ export default function DetailPlacesPage(props) {
 
                   successAlertNotification(
                     "Success",
-                    "You has successfully submitted your request!"
+                    "You have successfully submitted your request!"
                   ).then(() => {
                     router.push(`/places/${id}`);
                     toggleModalVerify();

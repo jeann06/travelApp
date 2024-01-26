@@ -58,7 +58,7 @@ export default function EditProfilePage(props) {
       <div className="container py-5">
         <div className="card mx-auto" style={{ maxWidth: "800px" }}>
           <div className="card-body py-4">
-            <h4 className="text-center mb-4">Suggest New Place</h4>
+            <h4 className="text-center mb-4">Edit Profile</h4>
             <Formik
               initialValues={{
                 file: null,
@@ -128,7 +128,7 @@ export default function EditProfilePage(props) {
                         <FormGroup>
                           {formik.values.file && (
                             <div
-                              className="position-relative"
+                              className="position-relative mx-auto mb-1"
                               style={{
                                 width: 100,
                                 height: 100,
@@ -136,18 +136,22 @@ export default function EditProfilePage(props) {
                             >
                               <img
                                 src={URL.createObjectURL(formik.values.file)}
-                                className="d-block object-fit-cover border rounded w-100 h-100"
+                                className="d-block object-fit-cover border rounded-circle w-100 h-100"
                                 alt=""
                               />
                             </div>
                           )}
+                          <div className="d-flex">
+                            <div className="m-auto">
+                              <label
+                                className="btn btn-primary mt-2"
+                                htmlFor="changeImage"
+                              >
+                                Change image
+                              </label>
+                            </div>
+                          </div>
 
-                          <label
-                            className="d-block btn btn-primary mt-2"
-                            htmlFor="changeImage"
-                          >
-                            Change image
-                          </label>
                           <input
                             id="changeImage"
                             type="file"
