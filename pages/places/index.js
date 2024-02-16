@@ -228,9 +228,8 @@ export default function PlacesPage(props) {
               </div>
 
               <Button
-                color="primary"
                 className="btn-sm mx-auto mb-2 mt-2"
-                style={{ width: "100px" }}
+                style={{ width: "100px", backgroundColor: "#00b4d8" }}
                 type="button"
                 onClick={() => {
                   router.push({
@@ -361,7 +360,11 @@ export default function PlacesPage(props) {
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
-                <Button className="" color="primary" href={`places/addPlace`}>
+                <Button
+                  className=""
+                  style={{ backgroundColor: "#00b4d8" }}
+                  href={`places/addPlace`}
+                >
                   Suggest Place
                 </Button>
               </div>
@@ -388,7 +391,8 @@ export default function PlacesPage(props) {
                           style={{
                             display: "inline-block",
                             borderRadius: "10px",
-                            backgroundColor: "#ffc78f",
+                            backgroundColor: "#00b4d8",
+                            color: "#ffff",
                           }}
                         >
                           <p className="card-text" style={{ fontSize: "13px" }}>

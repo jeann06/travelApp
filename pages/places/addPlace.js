@@ -269,7 +269,13 @@ export default function AddPlacePage(props) {
                               </>
                             ) : (
                               <div className="d-grid">
-                                <div className="btn btn-primary">
+                                <div
+                                  className="btn"
+                                  style={{
+                                    color: "#ffff",
+                                    backgroundColor: "#00b4d8",
+                                  }}
+                                >
                                   Select Image
                                 </div>
                               </div>
@@ -520,7 +526,8 @@ export default function AddPlacePage(props) {
                                 }}
                               />
                               <label
-                                className="btn btn-outline-primary"
+                                className="btn"
+                                style={{ borderColor: "#00b4d8" }}
                                 htmlFor={day}
                               >
                                 {day}
@@ -664,7 +671,7 @@ export default function AddPlacePage(props) {
                       <Button
                         block
                         type="submit"
-                        color="primary"
+                        style={{ backgroundColor: "#00b4d8" }}
                         disabled={formik.isSubmitting}
                       >
                         {formik.isSubmitting ? "Submitting..." : "Submit"}

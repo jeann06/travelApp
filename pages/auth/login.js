@@ -81,7 +81,11 @@ const LoginForm = () => {
           )}
 
           <div className="d-grid mt-4">
-            <Button type="submit" color="primary" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              style={{ backgroundColor: "#00b4d8" }}
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
                 <>
                   <Spinner size="sm" className="me-2" />
@@ -114,7 +118,11 @@ const LoginPage = () => {
       </div>
       <div className="card-footer p-3">
         Don't have an account?{" "}
-        <Link href="/auth/register" className="text-decoration-none">
+        <Link
+          href="/auth/register"
+          className="text-decoration-none fw-semibold"
+          style={{ color: "#00b4d8" }}
+        >
           Register Now
         </Link>
       </div>

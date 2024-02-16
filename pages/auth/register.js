@@ -157,7 +157,11 @@ const RegisterForm = () => {
           </div>
 
           <div className="d-grid mt-4">
-            <Button type="submit" color="primary" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              style={{ backgroundColor: "#00b4d8" }}
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
                 <>
                   <Spinner size="sm" className="me-2" />
@@ -190,7 +194,11 @@ const RegisterPage = () => {
       </div>
       <div className="card-footer p-3">
         Already have an account?{" "}
-        <Link href="/auth/login" className="text-decoration-none">
+        <Link
+          href="/auth/login"
+          className="text-decoration-none fw-semibold"
+          style={{ color: "#00b4d8" }}
+        >
           Login
         </Link>
       </div>

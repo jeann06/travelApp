@@ -44,8 +44,11 @@ export default function NotificationPage(props) {
 
             <Button
               className="m-auto mt-3 fw-semibold rounded-pill border"
-              color="light"
-              style={{ width: "130px", height: "40px" }}
+              style={{
+                width: "130px",
+                height: "40px",
+                backgroundColor: "#00b4d8",
+              }}
               onClick={() => router.push(`/editProfile`)}
               hover={{ backgroundColor: "#000000" }}
             >
@@ -76,7 +79,8 @@ export default function NotificationPage(props) {
                           style={{
                             display: "inline-block",
                             borderRadius: "10px",
-                            backgroundColor: "#ffc78f",
+                            color: "#ffff",
+                            backgroundColor: "#00b4d8",
                           }}
                         >
                           <p className="card-text" style={{ fontSize: "13px" }}>

@@ -6,6 +6,7 @@ import { Button, Col, Container, Row } from "reactstrap";
 import ReactPaginate from "react-paginate";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import moment from "moment";
 
 export default function NotificationPage(props) {
   const { data } = props;
@@ -20,8 +21,21 @@ export default function NotificationPage(props) {
         <div className="mt-4">
           {data.content.map((item, index) => {
             return (
-              <div key={index} className="border border-2 p-3 mb-3">
-                <div>{item.title}</div>
+              <div key={index} className="border rounded border-2 p-3 mb-3">
+                <div
+                  className="d-flex gap-2 align-items-center"
+                  style={{ fontSize: 14 }}
+                >
+                  <span
+                    className="badge badge-sm"
+                    style={{ backgroundColor: "#00b4d8" }}
+                  >
+                    {item.category}
+                  </span>
+                  &middot;
+                  <span>{moment(item.createdDate).fromNow()}</span>
+                </div>
+                <strong>{item.title}</strong>
                 <div>{item.message}</div>
               </div>
             );

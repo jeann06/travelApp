@@ -248,7 +248,6 @@ export default function EditPlacePage(props) {
             >
               {(formik) => (
                 <FormikForm>
-                  <DebugFormik />
                   <div className="px-4">
                     <Row>
                       <Col md={{ size: 12 }}>

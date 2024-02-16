@@ -226,7 +226,7 @@ export default function DetailPlacesPage(props) {
                 Report Place
               </DropdownItem>
               <DropdownItem onClick={toggleModalVerify}>
-                Verify Place
+                Claim Place
               </DropdownItem>
               {session?.user?.username === data.user.username && (
                 <>
@@ -382,7 +382,7 @@ export default function DetailPlacesPage(props) {
                     </Button>
                     <Button
                       type="submit"
-                      color="primary"
+                      style={{ backgroundColor: "#00b4d8" }}
                       className="ms-3 me-2"
                       disabled={formik.isSubmitting}
                     >
@@ -404,7 +404,7 @@ export default function DetailPlacesPage(props) {
 
         <Modal isOpen={isModalVerifyOpen} toggle={toggleModalVerify}>
           <ModalHeader toggle={toggleModalVerify} className="text-center px-4">
-            Verify Place
+            Claim Place
           </ModalHeader>
           <ModalBody className="mb-3">
             <Formik
@@ -531,7 +531,7 @@ export default function DetailPlacesPage(props) {
                         <Button
                           block
                           type="submit"
-                          color="primary"
+                          style={{ backgroundColor: "#00b4d8" }}
                           disabled={formik.isSubmitting}
                         >
                           {formik.isSubmitting ? "Submitting..." : "Submit"}
@@ -792,7 +792,7 @@ export default function DetailPlacesPage(props) {
                 <div className="d-flex mt-1">
                   <Button
                     type="submit"
-                    color="primary"
+                    style={{ backgroundColor: "#00b4d8" }}
                     className=" ms-auto "
                     disabled={formik.isSubmitting}
                   >

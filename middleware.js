@@ -4,18 +4,10 @@ import { NextResponse } from "next/server";
 const ROLE = {
   USER: "USER",
   ADMIN: "ADMIN",
-  MANAGER: "MANAGER",
 };
 
-const PROTECTED_ADMIN_ROUTES = [
-  "/admin",
-  "/ini-rahasia",
-  "/hanya-admin-yang-tau",
-  "/pageAdminOnly",
-];
+const PROTECTED_ADMIN_ROUTES = ["/admin"];
 const PROTECTED_USER_ROUTES = ["/profile", "/userOnly"];
-
-const PROTECTED_MANAGER_ROUTES = ["/profile", "/userOnly"];
 
 /*
   /places -> bisa diakses admin & user yg penting sudah login

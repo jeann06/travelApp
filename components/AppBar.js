@@ -106,7 +106,7 @@ const NotificationButton = () => {
                 <DropdownItem
                   key={notification.id}
                   className={`rounded-2 p-3 ${
-                    notification.read ? "" : "bg-danger-subtle"
+                    notification.read ? "" : "bg-primary-subtle"
                   }`}
                   onClick={async () => {
                     const response = await fetcher.get(
@@ -125,7 +125,10 @@ const NotificationButton = () => {
                     className="d-flex gap-2 align-items-center"
                     style={{ fontSize: 14 }}
                   >
-                    <span className="badge badge-sm bg-primary">
+                    <span
+                      className="badge badge-sm"
+                      style={{ backgroundColor: "#00b4d8" }}
+                    >
                       {notification.category}
                     </span>
                     &middot;
@@ -164,8 +167,16 @@ function Example(args) {
 
   return (
     <div>
-      <Navbar expand>
-        <NavbarBrand href="/" className="ms-3 custom-font">
+      <Navbar
+        expand
+        className="border mb-3"
+        style={{ borderBottomColor: "#00b4d8" }}
+      >
+        <NavbarBrand
+          href="/"
+          className="ms-3 custom-font"
+          style={{ color: "#00b4d8" }}
+        >
           Travelink
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />

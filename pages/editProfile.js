@@ -117,7 +117,6 @@ export default function EditProfilePage(props) {
             >
               {(formik) => (
                 <FormikForm>
-                  <DebugFormik />
                   <SetInitialProfileImage
                     destinationPath={`/${data.profileUrl}`}
                     username={data.username}
@@ -144,10 +143,14 @@ export default function EditProfilePage(props) {
                           <div className="d-flex">
                             <div className="m-auto">
                               <label
-                                className="btn btn-primary mt-2"
+                                className="btn mt-2"
                                 htmlFor="changeImage"
+                                style={{
+                                  color: "#ffff",
+                                  backgroundColor: "#00b4d8",
+                                }}
                               >
-                                Change image
+                                Change Image
                               </label>
                             </div>
                           </div>
@@ -259,7 +262,7 @@ export default function EditProfilePage(props) {
                       <Button
                         block
                         type="submit"
-                        color="primary"
+                        style={{ backgroundColor: "#00b4d8" }}
                         disabled={formik.isSubmitting}
                       >
                         {formik.isSubmitting ? "Saving..." : "Save"}
