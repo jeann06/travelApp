@@ -658,7 +658,7 @@ export default function DetailPlacesPage(props) {
 
                 MySwal.fire({
                   icon: "success",
-                  title: <p>Review has successfully added!</p>,
+                  title: <p>Review successfully added!</p>,
                   showConfirmButton: true,
                   showDenyButton: false,
                 }).then(() => {
@@ -893,13 +893,13 @@ export default function DetailPlacesPage(props) {
 
                 <div className="d-flex gap-3">
                   <Button
-                    color={
-                      item.likedUsers.find(
-                        (user) => user.username === session?.user?.username
-                      )
-                        ? "primary"
-                        : "none"
-                    }
+                    // color={
+                    //   item.likedUsers.find(
+                    //     (user) => user.username === session?.user?.username
+                    //   )
+                    //     ? "#00b4d8"
+                    //     : "none"
+                    // }
                     size="sm"
                     className="mt-2 d-flex justify-content-center align-items-center"
                     onClick={async () => {
@@ -915,7 +915,19 @@ export default function DetailPlacesPage(props) {
 
                       router.reload();
                     }}
-                    style={{ border: "none" }}
+                    style={{
+                      border: "none",
+                      backgroundColor: item.likedUsers.find(
+                        (user) => user.username === session?.user?.username
+                      )
+                        ? "#00b4d8"
+                        : "#ffff",
+                      color: item.likedUsers.find(
+                        (user) => user.username === session?.user?.username
+                      )
+                        ? "#ffff"
+                        : "black",
+                    }}
                     disabled={status !== "authenticated"}
                   >
                     <ThumbsUp className="me-2" size={20}></ThumbsUp>
