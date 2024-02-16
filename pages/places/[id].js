@@ -53,41 +53,415 @@ const ReviewDropdownAction = ({ review, session }) => {
   const toggleDropdownReview = () => {
     setIsDropdownReviewOpen(!isDropdownReviewOpen);
   };
+  const [isModalReportReviewOpen, setIsModalReportReviewOpen] = useState(false);
+  const toggleModalReportReview = () => {
+    setIsModalReportReviewOpen(!isModalReportReviewOpen);
+  };
+  const radioOptions = [
+    {
+      id: "false-information",
+      value: "This review contains false information",
+    },
+    {
+      id: "offensive-content",
+      value: "This review contains offensive content",
+    },
+  ];
+  const [isModalEditReviewOpen, setIsModalEditReviewOpen] = useState(false);
+  const toggleModalEditReview = () => {
+    setIsModalEditReviewOpen(!isModalEditReviewOpen);
+  };
+
+  const [previewImages, setPreviewImages] = useState([]);
 
   return (
-    <Dropdown
-      className=""
-      isOpen={isDropdownReviewOpen}
-      toggle={toggleDropdownReview}
-    >
-      <DropdownToggle caret={false} color="none" className="">
-        <MoreVertical />
-      </DropdownToggle>
-      <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
-        <DropdownItem>Report Review</DropdownItem>
-        {session?.user?.username === review.user.username && (
-          <>
-            <DropdownItem>Edit Review</DropdownItem>
-            <DropdownItem
-              onClick={async () => {
-                const response = await fetcher.delete(
-                  `/review/delete/${review.id}`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${session.user.token}`,
-                    },
-                  }
-                );
+    <div>
+      <div>
+        <Dropdown
+          className=""
+          isOpen={isDropdownReviewOpen}
+          toggle={toggleDropdownReview}
+        >
+          <DropdownToggle caret={false} color="none" className="">
+            <MoreVertical />
+          </DropdownToggle>
+          <DropdownMenu className="mt-1 ms-3" style={{ minWidth: "100px" }}>
+            <DropdownItem onClick={toggleModalReportReview}>
+              Report Review
+            </DropdownItem>
+            {session?.user?.username === review.user.username && (
+              <>
+                <DropdownItem onClick={toggleModalEditReview}>
+                  Edit Review
+                </DropdownItem>
+                <DropdownItem
+                  onClick={async () => {
+                    const response = await fetcher.delete(
+                      `/review/delete/${review.id}`,
+                      {
+                        headers: {
+                          Authorization: `Bearer ${session.user.token}`,
+                        },
+                      }
+                    );
 
-                router.reload();
+                    router.reload();
+                  }}
+                >
+                  Delete Review
+                </DropdownItem>
+              </>
+            )}
+          </DropdownMenu>
+        </Dropdown>
+      </div>
+      <div>
+        <Modal
+          isOpen={isModalReportReviewOpen}
+          toggle={toggleModalReportReview}
+        >
+          <ModalHeader
+            toggle={toggleModalReportReview}
+            className="text-center px-4"
+          >
+            Report Review
+          </ModalHeader>
+          <ModalBody className="mb-3">
+            <Formik
+              initialValues={{
+                message: "",
+              }}
+              validationSchema={yup.object().shape({
+                message: yup.string().required("Reason is required"),
+              })}
+              onSubmit={async (values) => {
+                // try {
+                //   const response = await fetcher.post(
+                //     `/post/report/${id}`,
+                //     { message: values.message },
+                //     {
+                //       headers: {
+                //         Authorization: `Bearer ${session.user.token}`,
+                //       },
+                //     }
+                //   );
+                MySwal.fire({
+                  icon: "success",
+                  title: <p>Thank you for reporting!</p>,
+                  showConfirmButton: true,
+                  showDenyButton: false,
+                }).then(() => {
+                  router.reload();
+                  toggleModalReportReview();
+                });
+                // } catch (error) {
+                //   console.error(error);
+                //   MySwal.fire({
+                //     icon: "error",
+                //     title: <p>Something went wrong!</p>,
+                //     showConfirmButton: true,
+                //     showDenyButton: false,
+                //   });
+                // }
               }}
             >
-              Delete Review
-            </DropdownItem>
-          </>
-        )}
-      </DropdownMenu>
-    </Dropdown>
+              {(formik) => (
+                <FormikForm>
+                  <div className="px-2 py-1">
+                    <label
+                      htmlFor="message"
+                      className="fw-semibold mb-3"
+                      style={{ fontSize: "20px" }}
+                    >
+                      Why you report this review?
+                    </label>
+                    {radioOptions.map((option, index) => (
+                      <div className="form-check" key={index}>
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="message"
+                          id={option.id}
+                          value={option.value}
+                          checked={formik.values.message === option.value}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                        <label
+                          className="form-check-label mb-2"
+                          htmlFor={option.id}
+                        >
+                          {option.value}
+                        </label>
+                      </div>
+                    ))}
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="message"
+                        id="others"
+                        value=""
+                        checked={
+                          radioOptions.findIndex(
+                            (option) => option.value === formik.values.message
+                          ) === -1
+                        }
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                      <label className="form-check-label" htmlFor="others">
+                        Others
+                      </label>
+                      {radioOptions.findIndex(
+                        (option) => option.value === formik.values.message
+                      ) === -1 && (
+                        <textarea
+                          className="form-control mt-1"
+                          name="message"
+                          placeholder="Please specify your reason"
+                          rows="3"
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          style={{ resize: "none" }}
+                        />
+                      )}
+                    </div>
+
+                    <Input
+                      hidden
+                      invalid={
+                        formik.touched.message && !!formik.errors.message
+                      }
+                    />
+                    <FormFeedback className="ms-4">
+                      {formik.errors.message}
+                    </FormFeedback>
+                  </div>
+
+                  <div className="d-flex mt-2">
+                    <Button
+                      color="light"
+                      className="ms-auto"
+                      onClick={toggleModalReportReview}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      style={{ backgroundColor: "#00b4d8" }}
+                      className="ms-3 me-2"
+                      disabled={formik.isSubmitting}
+                    >
+                      {formik.isSubmitting ? (
+                        <>
+                          <Spinner size="sm" color="light" className="me-2" />
+                          Submiting...
+                        </>
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </div>
+                </FormikForm>
+              )}
+            </Formik>
+          </ModalBody>
+        </Modal>
+
+        <Modal isOpen={isModalEditReviewOpen} toggle={toggleModalEditReview}>
+          <ModalHeader
+            toggle={toggleModalEditReview}
+            className="text-center px-4"
+          >
+            Edit Review
+          </ModalHeader>
+          <ModalBody className="mb-3">
+            <Formik
+              initialValues={{
+                files: review.files || [],
+                rating: review.rating,
+                description: review.description,
+              }}
+              validationSchema={yup.object().shape({
+                rating: yup.string().required("Rating is required"),
+                description: yup.string().required("Description is required"),
+              })}
+              onSubmit={async (values, actions) => {
+                const { files, ...rest } = values;
+
+                const formData = new FormData();
+                files.forEach((file, index) => {
+                  formData.append("files", file);
+                });
+
+                formData.append("data", JSON.stringify(rest));
+                try {
+                  const response = await fetcher.put(
+                    `/review/edit/${id}`,
+                    formData,
+                    {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${session.user.token}`,
+                      },
+                    }
+                  );
+
+                  MySwal.fire({
+                    icon: "success",
+                    title: <p>Review successfully edited!</p>,
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                  }).then(() => {
+                    router.reload();
+                  });
+                } catch (error) {
+                  console.error(error);
+                  MySwal.fire({
+                    icon: "error",
+                    title: <p>Something went wrong!</p>,
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                  });
+                }
+              }}
+            >
+              {(formik) => (
+                <FormikForm className="">
+                  <Row>
+                    <FormGroup tag={Col}>
+                      <Rating
+                        id="rating"
+                        name="rating"
+                        initialRating={formik.values.rating}
+                        onChange={(value) =>
+                          formik.setFieldValue("rating", value)
+                        }
+                        emptySymbol={
+                          <Star
+                            color="#ffe234"
+                            className="text-muted"
+                            size={25}
+                          />
+                        }
+                        fullSymbol={
+                          <Star
+                            color="#ffe234"
+                            fill="#ffe234"
+                            className="text-warning"
+                            size={25}
+                          />
+                        }
+                        onBlur={(e) => {
+                          formik.setFieldTouched("rating");
+                        }}
+                      />
+                      <Input
+                        type="hidden"
+                        invalid={formik.touched.rating && formik.errors.rating}
+                      />
+                      <FormFeedback>{formik.errors.rating}</FormFeedback>
+                    </FormGroup>
+                  </Row>
+
+                  <Row>
+                    <FormGroup tag={Col}>
+                      <Input
+                        id="description"
+                        name="description"
+                        placeholder="Write your review.."
+                        type="textarea"
+                        style={{ resize: "none" }}
+                        rows="3"
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        invalid={
+                          formik.errors.description &&
+                          formik.touched.description
+                        }
+                      />
+                      <FormFeedback>{formik.errors.description}</FormFeedback>
+                    </FormGroup>
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <label>
+                          <input
+                            type="file"
+                            multiple
+                            hidden
+                            onChange={(e) => {
+                              const files = e.target.files;
+
+                              if (files.length > 5) {
+                                formik.setFieldError("files", "Maximum 5");
+                                return;
+                              }
+
+                              formik.setFieldValue("files", Array.from(files));
+                              if (files.length > 0) {
+                                setPreviewImages(
+                                  Array.from(files).map((file) =>
+                                    URL.createObjectURL(file)
+                                  )
+                                );
+                              }
+                            }}
+                          />
+
+                          <div>
+                            {previewImages.length > 0 ? (
+                              <div>
+                                {previewImages.map((file, index) => (
+                                  <img
+                                    key={index}
+                                    src={file}
+                                    className="object-fit-cover border rounded"
+                                    width="150px"
+                                    height="150px"
+                                    alt=""
+                                  />
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="d-flex">
+                                <span className="btn btn-light border justify-content-center align-items-center">
+                                  Add Image
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </label>
+                        <Input
+                          className="d-none"
+                          invalid={formik.errors.files}
+                        />
+                        <FormFeedback>{formik.errors.files}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
+                  <div className="d-flex mt-1">
+                    <Button
+                      type="submit"
+                      style={{ backgroundColor: "#00b4d8" }}
+                      className=" ms-auto "
+                      disabled={formik.isSubmitting}
+                    >
+                      {formik.isSubmitting ? "Submitting..." : "Submit"}
+                    </Button>
+                  </div>
+                </FormikForm>
+              )}
+            </Formik>
+          </ModalBody>
+        </Modal>
+      </div>
+    </div>
   );
 };
 
@@ -352,7 +726,7 @@ export default function DetailPlacesPage(props) {
                         <textarea
                           className="form-control mt-1"
                           name="message"
-                          placeholder="Please specify"
+                          placeholder="Please specify your reason"
                           rows="3"
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
@@ -893,13 +1267,6 @@ export default function DetailPlacesPage(props) {
 
                 <div className="d-flex gap-3">
                   <Button
-                    // color={
-                    //   item.likedUsers.find(
-                    //     (user) => user.username === session?.user?.username
-                    //   )
-                    //     ? "#00b4d8"
-                    //     : "none"
-                    // }
                     size="sm"
                     className="mt-2 d-flex justify-content-center align-items-center"
                     onClick={async () => {

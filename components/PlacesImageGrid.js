@@ -79,7 +79,7 @@ const PlacesImageGrid = ({ items, defaultHeight = 500 }) => {
                     >
                       <Button
                         className="position-absolute top-50 start-50 translate-middle"
-                        color="primary"
+                        style={{ backgroundColor: "#00b4d8" }}
                         onClick={() => setLightboxOpen(true)}
                       >
                         <span className="text-white">View gallery</span>
