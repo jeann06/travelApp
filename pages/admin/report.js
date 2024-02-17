@@ -2,15 +2,41 @@ import fetcher from "@/utils/fetcher";
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
 import { useState } from "react";
-import { Button, Col, Container, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Row,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 import ReactPaginate from "react-paginate";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import moment from "moment";
+import * as yup from "yup";
+import { Check } from "react-feather";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
-export default function NotificationPage(props) {
+export default function ManageReportPage(props) {
   const { data } = props;
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [isModalReportDetailOpen, setIsModalReportDetailOpen] = useState(false);
+  const [processedReports, setProcessedReports] = useState({});
+
+  const toggleModalReportDetail = () => {
+    setIsModalReportDetailOpen(!isModalReportDetailOpen);
+  };
+
+  const processReport = (index) => {
+    setProcessedReports((prev) => ({ ...prev, [index]: true }));
+  };
+
+  const MySwal = withReactContent(Swal);
 
   return (
     <div>
@@ -18,136 +44,132 @@ export default function NotificationPage(props) {
         <h1>Manage Report</h1>
 
         <div className="mt-4">
-          <div className="border rounded border-2 p-3 mb-3 d-flex justify-content-between">
-            <div className="my-auto">
-              <div className="my-auto">
-                <span
-                  className="badge badge-sm"
+          {data.content.map((item, index) => {
+            const isProcessed = processedReports[index];
+            return (
+              <div
+                key={index}
+                className="border rounded border-2 p-3 mb-3 d-flex justify-content-between"
+              >
+                <div className="my-auto">
+                  <div className="my-auto">
+                    <span
+                      className="badge badge-sm"
+                      style={{
+                        backgroundColor: isProcessed ? "#28a745" : "#00b4d8",
+                      }}
+                    >
+                      {isProcessed ? "PROCESSED" : "NEW REPORT"}
+                    </span>
+                  </div>
+                  Someone has reported{" "}
+                  <span className="" style={{ color: "#00b4d8" }}>
+                    <a
+                      href={`/places/${item.post.id}`}
+                      style={{ textDecoration: "none", color: "#00b4d8" }}
+                    >
+                      {item.post.title}
+                    </a>
+                  </span>{" "}
+                  <span className="m-auto" style={{ fontSize: "20px" }}>
+                    &middot;
+                  </span>{" "}
+                  <span>{moment(item.createdDate).fromNow()}</span>
+                </div>
+                <Button
+                  className="button ms-auto"
                   style={{ backgroundColor: "#00b4d8" }}
+                  onClick={toggleModalReportDetail}
                 >
-                  NEW REPORT
-                </span>
+                  Check Detail
+                </Button>
+                <div>
+                  {" "}
+                  <Modal
+                    isOpen={isModalReportDetailOpen}
+                    toggle={toggleModalReportDetail}
+                  >
+                    <ModalHeader
+                      toggle={toggleModalReportDetail}
+                      className="text-center px-4"
+                    >
+                      Report Detail
+                    </ModalHeader>
+                    <ModalBody className="mb-3">
+                      Someone has reported{" "}
+                      <span className="" style={{ color: "#00b4d8" }}>
+                        <a
+                          href={`/places/${item.post.id}`}
+                          style={{ textDecoration: "none", color: "#00b4d8" }}
+                        >
+                          {item.post.title}
+                        </a>
+                      </span>{" "}
+                      on {moment(item.createdDate).format("DD MMMM YYYY")}{" "}
+                      <br></br>
+                      Reason: {item.message}
+                      <div className="mt-3 d-flex">
+                        <Button color="light" className="me-3 ms-auto">
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          style={{ border: "none", backgroundColor: "#00b4d8" }}
+                          onClick={() => {
+                            processReport(index);
+                            MySwal.fire({
+                              icon: "success",
+                              title: <p>Report has been processed</p>,
+                              showConfirmButton: true,
+                              showDenyButton: false,
+                            }).then(() => {
+                              toggleModalReportDetail();
+                            });
+                          }}
+                        >
+                          <Check /> Process
+                        </Button>
+                      </div>
+                    </ModalBody>
+                  </Modal>
+                </div>
               </div>
-              user001 has reported{" "}
-              <span className="" style={{ color: "#00b4d8" }}>
-                Mouse Coffee
-              </span>{" "}
-              &middot; 2 minutes ago
-            </div>
-            <Button className="button" style={{ backgroundColor: "#00b4d8" }}>
-              Check Detail
-            </Button>
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="border rounded border-2 p-3 mb-3 d-flex justify-content-between">
-            <div className="my-auto">
-              <div className="my-auto">
-                <span
-                  className="badge badge-sm"
-                  style={{ backgroundColor: "#00b4d8" }}
-                >
-                  NEW REPORT
-                </span>
-              </div>
-              jeaniewnt has reported ashield's review on{" "}
-              <span className="" style={{ color: "#00b4d8" }}>
-                Four Meeples
-              </span>{" "}
-              &middot; 14 minutes ago
-            </div>
-            <Button className="button" style={{ backgroundColor: "#00b4d8" }}>
-              Check Detail
-            </Button>
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="border rounded border-2 p-3 mb-3 d-flex justify-content-between">
-            <div className="my-auto">
-              <div className="my-auto">
-                <span className="badge badge-sm bg-success">PROCESSED</span>
-              </div>
-              mason756 has reported bolly009's review on{" "}
-              <span className="" style={{ color: "#00b4d8" }}>
-                Tebet Eco Park
-              </span>{" "}
-              &middot; 3 hours ago
-            </div>
-            <Button className="button" style={{ backgroundColor: "#00b4d8" }}>
-              Check Detail
-            </Button>
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="border rounded border-2 p-3 mb-3 d-flex justify-content-between">
-            <div className="my-auto">
-              <div className="my-auto">
-                <span className="badge badge-sm bg-success">PROCESSED</span>
-              </div>
-              futhehammy has reported{" "}
-              <span className="" style={{ color: "#00b4d8" }}>
-                Taman Menteng
-              </span>{" "}
-              &middot; 6 hours ago
-            </div>
-            <Button className="button" style={{ backgroundColor: "#00b4d8" }}>
-              Check Detail
-            </Button>
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="border rounded border-2 p-3 mb-3 d-flex justify-content-between">
-            <div className="my-auto">
-              <div className="my-auto">
-                <span className="badge badge-sm bg-success">PROCESSED</span>
-              </div>
-              sukatraveling has reported{" "}
-              <span className="" style={{ color: "#00b4d8" }}>
-                Bandar Djakarta
-              </span>{" "}
-              &middot; 19 hours ago
-            </div>
-            <Button className="button" style={{ backgroundColor: "#00b4d8" }}>
-              Check Detail
-            </Button>
-          </div>
+            );
+          })}
         </div>
       </Container>
     </div>
   );
 }
 
-// export async function getServerSideProps(ctx) {
-//   const sessionData = await getSession(ctx);
+export async function getServerSideProps(ctx) {
+  const sessionData = await getSession(ctx);
 
-//   if (!sessionData) {
-//     return {
-//       redirect: {
-//         destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
-//         permanent: false,
-//       },
-//     };
-//   }
-//   console.log(sessionData.user.token);
+  if (!sessionData || sessionData.user.role !== "ADMIN") {
+    return {
+      redirect: {
+        destination: `/auth/login/?callbackUrl=${ctx.resolvedUrl}`,
+        permanent: false,
+      },
+    };
+  }
+  console.log(sessionData.user.token);
 
-//   try {
-//     const response = await fetcher.get(
-//       `/notification/notifications/get?page=0&size=10`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${sessionData.user.token}`,
-//         },
-//       }
-//     );
-//     const data = response.data.data;
-//     return {
-//       props: {
-//         data,
-//       },
-//     };
-//   } catch (error) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-// }
+  try {
+    const response = await fetcher.get(`/admin/report/get?page=0&size=5`, {
+      headers: {
+        Authorization: `Bearer ${sessionData.user.token}`,
+      },
+    });
+    const data = response.data.data;
+    return {
+      props: {
+        data,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+}

@@ -162,7 +162,7 @@ const NotificationButton = () => {
 
 function Example(args) {
   const [isOpen, setIsOpen] = useState(false);
-
+  const { data: session, status } = useSession();
   const toggle = () => setIsOpen(!isOpen);
 
   return (
@@ -190,9 +190,17 @@ function Example(args) {
             <NavItem className="mx-3">
               <NavLink href={`/places/`}>Places to Visit</NavLink>
             </NavItem>
-            {/* <NavItem className="mx-3">
-              <NavLink href="/">About Us</NavLink>
-            </NavItem> */}
+            {status === "authenticated" && session.user.role === "ADMIN" && (
+              <>
+                <NavItem className="mx-3">
+                  <NavLink href={`/admin/report`}>Reports</NavLink>
+                </NavItem>
+                <NavItem className="mx-3">
+                  <NavLink href={`/admin/claim`}>Claims</NavLink>
+                </NavItem>
+                {/* Add more NavItems as needed */}
+              </>
+            )}
           </Nav>
           <NotificationButton />
           <LoginButton />
