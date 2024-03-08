@@ -21,22 +21,106 @@ import { Check } from "react-feather";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-export default function ManageReportPage(props) {
-  const { data } = props;
+const MySwal = withReactContent(Swal);
+
+const ModalReportDetail = ({ item }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [isModalReportDetailOpen, setIsModalReportDetailOpen] = useState(false);
-  const [processedReports, setProcessedReports] = useState({});
 
   const toggleModalReportDetail = () => {
     setIsModalReportDetailOpen(!isModalReportDetailOpen);
   };
 
-  const processReport = (index) => {
-    setProcessedReports((prev) => ({ ...prev, [index]: true }));
+  const processReport = async (id) => {
+    const response = await fetcher.get(`/admin/report/process/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session?.user.token}`,
+      },
+    });
   };
 
-  const MySwal = withReactContent(Swal);
+  return (
+    <>
+      <Button
+        className="button ms-auto"
+        style={{ backgroundColor: "#00b4d8" }}
+        onClick={toggleModalReportDetail}
+      >
+        Check Detail
+      </Button>
+      <div>
+        <Modal
+          isOpen={isModalReportDetailOpen}
+          toggle={toggleModalReportDetail}
+        >
+          <ModalHeader
+            toggle={toggleModalReportDetail}
+            className="text-center px-4"
+          >
+            Report Detail
+          </ModalHeader>
+          <ModalBody className="mb-3">
+            Someone has reported{" "}
+            <span className="" style={{ color: "#00b4d8" }}>
+              <a
+                href={`/places/${item.post.id}`}
+                style={{ textDecoration: "none", color: "#00b4d8" }}
+              >
+                {item.post.title}
+              </a>
+            </span>{" "}
+            on {moment(item.createdDate).format("DD MMMM YYYY")} <br></br>
+            Reason: {item.message}
+            <div className="mt-3 d-flex">
+              <Button
+                color="light"
+                className="me-3 ms-auto"
+                onClick={toggleModalReportDetail}
+              >
+                Cancel
+              </Button>
+              {!item.processed && (
+                <Button
+                  type="submit"
+                  style={{ border: "none", backgroundColor: "#00b4d8" }}
+                  onClick={async () => {
+                    try {
+                      await processReport(item.id);
+                      MySwal.fire({
+                        icon: "success",
+                        title: <p>Report has been processed</p>,
+                        showConfirmButton: true,
+                        showDenyButton: false,
+                      }).then(() => {
+                        toggleModalReportDetail();
+                        router.reload();
+                      });
+                    } catch (error) {
+                      MySwal.fire({
+                        icon: "error",
+                        title: <p>Something went wrong</p>,
+                        showConfirmButton: true,
+                        showDenyButton: false,
+                      }).then(() => {
+                        toggleModalReportDetail();
+                      });
+                    }
+                  }}
+                >
+                  <Check /> Process
+                </Button>
+              )}
+            </div>
+          </ModalBody>
+        </Modal>
+      </div>
+    </>
+  );
+};
+
+export default function ManageReportPage(props) {
+  const { data } = props;
 
   return (
     <div>
@@ -45,7 +129,7 @@ export default function ManageReportPage(props) {
 
         <div className="mt-4">
           {data.content.map((item, index) => {
-            const isProcessed = processedReports[index];
+            const isProcessed = item.processed;
             return (
               <div
                 key={index}
@@ -76,63 +160,7 @@ export default function ManageReportPage(props) {
                   </span>{" "}
                   <span>{moment(item.createdDate).fromNow()}</span>
                 </div>
-                <Button
-                  className="button ms-auto"
-                  style={{ backgroundColor: "#00b4d8" }}
-                  onClick={toggleModalReportDetail}
-                >
-                  Check Detail
-                </Button>
-                <div>
-                  {" "}
-                  <Modal
-                    isOpen={isModalReportDetailOpen}
-                    toggle={toggleModalReportDetail}
-                  >
-                    <ModalHeader
-                      toggle={toggleModalReportDetail}
-                      className="text-center px-4"
-                    >
-                      Report Detail
-                    </ModalHeader>
-                    <ModalBody className="mb-3">
-                      Someone has reported{" "}
-                      <span className="" style={{ color: "#00b4d8" }}>
-                        <a
-                          href={`/places/${item.post.id}`}
-                          style={{ textDecoration: "none", color: "#00b4d8" }}
-                        >
-                          {item.post.title}
-                        </a>
-                      </span>{" "}
-                      on {moment(item.createdDate).format("DD MMMM YYYY")}{" "}
-                      <br></br>
-                      Reason: {item.message}
-                      <div className="mt-3 d-flex">
-                        <Button color="light" className="me-3 ms-auto">
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          style={{ border: "none", backgroundColor: "#00b4d8" }}
-                          onClick={() => {
-                            processReport(index);
-                            MySwal.fire({
-                              icon: "success",
-                              title: <p>Report has been processed</p>,
-                              showConfirmButton: true,
-                              showDenyButton: false,
-                            }).then(() => {
-                              toggleModalReportDetail();
-                            });
-                          }}
-                        >
-                          <Check /> Process
-                        </Button>
-                      </div>
-                    </ModalBody>
-                  </Modal>
-                </div>
+                <ModalReportDetail item={item} />
               </div>
             );
           })}

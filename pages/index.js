@@ -130,7 +130,8 @@ export default function HomePage(props) {
                       style={{
                         display: "inline-block",
                         borderRadius: "10px",
-                        backgroundColor: "#ffc78f",
+                        backgroundColor: "#00b4d8",
+                        color: "#ffff",
                       }}
                     >
                       <p className="card-text" style={{ fontSize: "13px" }}>
@@ -201,7 +202,8 @@ export default function HomePage(props) {
                       style={{
                         display: "inline-block",
                         borderRadius: "10px",
-                        backgroundColor: "#ffc78f",
+                        backgroundColor: "#00b4d8",
+                        color: "#ffff",
                       }}
                     >
                       <p className="card-text" style={{ fontSize: "13px" }}>
