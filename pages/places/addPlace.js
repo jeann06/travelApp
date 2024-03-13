@@ -318,6 +318,7 @@ export default function AddPlacePage(props) {
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           invalid={formik.errors.alias && formik.touched.alias}
+                          autoComplete="off"
                         />
                         <FormFeedback>{formik.errors.alias}</FormFeedback>
                       </FormGroup>
@@ -641,6 +642,7 @@ export default function AddPlacePage(props) {
                             formik.errors.phoneNumber &&
                             formik.touched.phoneNumber
                           }
+                          autoComplete="off"
                         />
                         <FormFeedback>{formik.errors.phoneNumber}</FormFeedback>
                       </FormGroup>
