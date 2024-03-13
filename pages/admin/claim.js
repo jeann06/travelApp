@@ -22,7 +22,7 @@ import {
   CLAIM_TEXT,
 } from "@/components/constants";
 import moment from "moment";
-import { Check } from "react-feather";
+import { Check, X } from "react-feather";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -185,7 +185,7 @@ const ModalClaimDetail = ({ item }) => {
                       }
                     }}
                   >
-                    <Check /> Reject
+                    <X /> Reject
                   </Button>
                 </div>
               )}
